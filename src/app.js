@@ -23,9 +23,10 @@ app.get("/products",(req,res)=>{
 
     async function productsLimit(){ //esta funcion lee si hay un query limit y su valor y devuelve esa cantidad de productos
         const productos =  await productManager.getProducts();
-        if(limit > productos.length){
-            return res.send(`No contamos con esa cantidad de productos, actualmente contamos con ${productos.length} tipos de productos`);
+        if(limit > productos.length){ //si el query limit excede la cantidad de productos disponibles devuelve un error
+            return res.send({Error:`No contamos con esa cantidad de productos, actualmente contamos con ${productos.length} tipos de productos`});
         }
+        
         const products = productos.slice(0,limit)
 
         return res.send(products);
