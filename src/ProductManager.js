@@ -1,4 +1,4 @@
-import exp from 'constants';
+import { randomUUID } from 'crypto';
 import { promises } from 'fs';
 class ProductManager{
 
@@ -9,11 +9,12 @@ class ProductManager{
         this.path = path;
     }
 
-    async addProduct(title,description,price,thumbnail,code,stock){
+    async addProduct(product){
+        const {title,description,price,thumbnail,code,status,stock} = product;
         const products = await this.getProducts();
         const codeExist = products.some(prod => prod.code === code ) //Valido que el código no exista
         
-        if(title && description && price && thumbnail && code && stock){ // Valido que todos los campos estén completados
+        if(title && description && price && code && stock){ // Valido que todos los campos estén completados
 
             if (codeExist){
 
@@ -22,12 +23,14 @@ class ProductManager{
             }else{   //si el codigo de producto no existia lo pusheo en un array de productos  
                 
                 const newProducts = [...products, {
-                    id: this.#products.some(prod => prod.id === 1) ? this.#products.length + 1:1,
+                    // id: this.#products.some(prod => prod.id === 1) ? this.#products.length + 1:1,
+                    id: randomUUID(),
                     title: title,
                     description: description,
                     price: price,
-                    thumbnail: thumbnail,
+                    thumbnail: thumbnail || "",
                     code: code,
+                    status: typeof status === "boolean" ? status : true,
                     stock: stock,
                 }];
                 const productsJson = JSON.stringify(newProducts);//convierto a formato .json el array
@@ -56,10 +59,11 @@ class ProductManager{
     async getProductById(id){
 
         const products = await this.getProducts(); //recupero los datos del archivo .json
-        const exist = products.some(prod => prod.id === +id)  //reviso si existe un producto con el id solicitado
+        
+        const exist = products.some(prod => prod.id === id)  //reviso si existe un producto con el id solicitado
 
         if(exist){ //si existe el producto lo retorno
-            const productById = products.find(prod => prod.id === +id) 
+            const productById = products.find(prod => prod.id === id) 
             return productById;
         }else{  //si no existe retorno un mensaje de error
             console.error("Product with id: " + id + " Not found");
@@ -99,6 +103,20 @@ class ProductManager{
 
     }
 
+
+    async modificar(id, datos) {
+        const productoCargado = await this.getProductById(id);
+        if(!productoCargado) {
+          throw new Error('Producto no encontrado')
+        }
+        const todosLosProductos = await this.getProducts();
+        const productoModificado = {...productoCargado, ...datos};
+        const productosSinElProducto = todosLosProductos.filter(prod => prod.id !== id);
+        const nuevosProductos = [...productosSinElProducto, productoModificado];
+        const datosStr = JSON.stringify(nuevosProductos);
+        await promises.writeFile(this.path, datosStr);
+      }
+
     async deleteProduct(id){
         const products = await this.getProducts(); //recupero los datos del archivo .json
         const exist = products.some(prod => prod.id === id)  //reviso si existe un producto con el id solicitado
@@ -117,31 +135,5 @@ class ProductManager{
 
 }
 
-// async function main(){
 
-//     const path = "products.json"
-//     const algo = new ProductManager(path)
-    // await algo.addProduct("title","descr",599,"ImgPath","1232",12)
-    // await algo.addProduct("title2","descr",609,"ImgPath","12332",12)
-    // await algo.addProduct("title3","descr",400,"ImgPath","123321",12)
-    // await algo.addProduct("title4","descr",500,"ImgPath","122",12)
-    // await algo.addProduct("title5","descr",400,"ImgPath","12221212",12)
-    // await algo.addProduct("titulo6","descr",400,"ImgPath","122212qwq12",12)
-    // await algo.addProduct("title7","descr",599,"ImgPath","123agsdf2",12)
-    // await algo.addProduct("title8","descr",609,"ImgPath","12cvxsbsdsfb332",12)
-    // await algo.addProduct("title9","descr",400,"ImgPath","123scbsdfb321",12)
-    // await algo.addProduct("title10","descr",500,"ImgPath","122beraerbaserb",12)
-    // await algo.addProduct("title11","descr",400,"ImgPath","12aere3baerb221212",12)
-    // await algo.addProduct("titulo12","descr",400,"ImgPath","122aerbqerb3req212qwq12",12)
-
-
-    // await algo.updateProduct(1,"description",8000)
-    // const prods = await algo.getProducts()
-    // console.log("This is the getProducts:",prods)
-    // console.log("Get Product by Id: ",await algo.getProductById(2))
-
-    // await algo.deleteProduct(2)
-// }
-
-// main()
 export {ProductManager};
