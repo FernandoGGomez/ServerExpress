@@ -51,7 +51,7 @@ route.post("/:cid/product/:pid",async(req,res)=>{
 
     }
 
-    await cartManager.modificar(cid,pid)
+    await cartManager.addProductToCart(cid,pid)
 
     res.status(200).send(cart)
     

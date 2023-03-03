@@ -1,6 +1,7 @@
 import  express  from 'express';
 import { Router } from 'express';
 import { ProductManager } from '../src/ProductManager.js';
+import { uploader } from '../uploader.js';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}))
@@ -48,13 +49,19 @@ route.get("/:pid",async (req,res)=>{
    
 });
 
-route.post("/",async (req,res)=>{
+route.post("/",uploader.single("thumbnail"), async (req,res)=>{
 
+    const img = req.file?.path
     const product = req.body;
   
-    await productManager.addProduct(product);
+    const productoAgregado = await productManager.addProduct(product,img);
 
-    res.send({product});
+    if(!productoAgregado){
+
+        return res.status(404).send({Error:"Producto no válido ,faltan campos"})
+    }
+    
+    res.status(200).send({product});
 
 })
 

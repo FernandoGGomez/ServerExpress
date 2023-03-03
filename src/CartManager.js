@@ -56,50 +56,38 @@ class CartManager{
     
 
 
-    async modificar(cid, pid) {
+    async addProductToCart(cid, pid) {
         const carritoCargado = await this.getCartById(cid);
         if(!carritoCargado) {
           throw new Error('Carrito no encontrado')
         }
         const todosLosCarritos = await this.getCarts();
  
-        if(carritoCargado.products.hasOwnProperty(0) ){  //valido que products tenga algo en la posicion 0 
-            const productoEnCarrito = carritoCargado.products.map(element => {
-                
-             return element.product == pid 
-            });
+   
+        const productoEnCarrito = carritoCargado.products.map(element => {
+            
+            return element.product == pid 
+        });
 
-            if(productoEnCarrito.some(prod => prod == true)){
-                
-                //si existe el producto en el carrito
-                carritoCargado.products[carritoCargado.products.findIndex(element => element.product == pid)].quantity += 1 ;
-    
-                const carritoModificado = {...carritoCargado };
-                const carritoSinElProducto = todosLosCarritos.filter(car => car.id !== cid);
-                const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
-                const datosStr = JSON.stringify(nuevosCarritos);
-                await promises.writeFile(this.path, datosStr);
-    
-    
-            } else{
-               //No existe el producto en el carrito
+        if(productoEnCarrito.some(prod => prod == true)){
+            
+            //si existe el producto en el carrito
+            carritoCargado.products[carritoCargado.products.findIndex(element => element.product == pid)].quantity += 1 ;
+
+            const carritoModificado = {...carritoCargado };
+            const carritoSinElProducto = todosLosCarritos.filter(car => car.id !== cid);
+            const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
+            const datosStr = JSON.stringify(nuevosCarritos);
+            await promises.writeFile(this.path, datosStr);
 
 
-                const productEnCarrito = {product: pid,quantity: 1}
-                carritoCargado.products.push(productEnCarrito);
-                const carritoModificado = {...carritoCargado};
-                const carritoSinElProducto = todosLosCarritos.filter(car => car.id !== cid);
-                const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
-                const datosStr = JSON.stringify(nuevosCarritos);
-                await promises.writeFile(this.path, datosStr);
-    
-            }
-        }
-        else{
+        } else{
             //No existe el producto en el carrito
-  
-            const productEnCarrito = [{product:pid,quantity:1}]
-            const carritoModificado = {...carritoCargado,products:productEnCarrito};
+
+
+            const productEnCarrito = {product: pid,quantity: 1}
+            carritoCargado.products.push(productEnCarrito);
+            const carritoModificado = {...carritoCargado};
             const carritoSinElProducto = todosLosCarritos.filter(car => car.id !== cid);
             const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
             const datosStr = JSON.stringify(nuevosCarritos);

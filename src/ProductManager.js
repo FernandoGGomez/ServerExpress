@@ -9,8 +9,8 @@ class ProductManager{
         this.path = path;
     }
 
-    async addProduct(product){
-        const {title,description,price,thumbnail,code,status,stock} = product;
+    async addProduct(product,img){
+        const {title,description,price,code,status,stock} = product;
         const products = await this.getProducts();
         const codeExist = products.some(prod => prod.code === code ) //Valido que el código no exista
         
@@ -28,17 +28,19 @@ class ProductManager{
                     title: title,
                     description: description,
                     price: price,
-                    thumbnail: thumbnail || "",
+                    thumbnail: img || "",
                     code: code,
                     status: typeof status === "boolean" ? status : true,
                     stock: stock,
                 }];
                 const productsJson = JSON.stringify(newProducts);//convierto a formato .json el array
                 await promises.writeFile(this.path,productsJson)//para cargarlo en el archivo
+                return true
 
             }
         }else{
             console.log("All fields are required")
+            return false
         }
         
       
