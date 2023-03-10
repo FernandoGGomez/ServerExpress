@@ -21,10 +21,10 @@ class ProductManager{
                 console.log(`Product code: ${code} has already been added`)
 
             }else{   //si el codigo de producto no existia lo pusheo en un array de productos  
-                
+                const id = randomUUID();
                 const newProducts = [...products, {
                     // id: this.#products.some(prod => prod.id === 1) ? this.#products.length + 1:1,
-                    id: randomUUID(),
+                    id: id,
                     title: title,
                     description: description,
                     price: price,
@@ -35,7 +35,7 @@ class ProductManager{
                 }];
                 const productsJson = JSON.stringify(newProducts);//convierto a formato .json el array
                 await promises.writeFile(this.path,productsJson)//para cargarlo en el archivo
-                return true
+                return id
 
             }
         }else{
@@ -125,7 +125,7 @@ class ProductManager{
 
         if(!exist){ //si no existe el producto devuelvo un mensaje de error
             console.error("The product with id " + id + " can't be deleted because doesn't exist")
-            return
+            return false
         }
 
 
@@ -133,6 +133,7 @@ class ProductManager{
 
         promises.writeFile(this.path,JSON.stringify(productDelete)); //sobreescribo el archivo .json con el array de productos filtrados
 
+        return true
     }
 
 }

@@ -5,7 +5,7 @@ import { uploader } from '../uploader.js';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}))
-const path = "products.json";
+const path = "./data/products.json";
 
 const productManager = new ProductManager(path) //genero una nueva instancia de la clase ProductManager
 
