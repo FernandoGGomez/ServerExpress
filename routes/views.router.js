@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { ProductManager } from '../src/ProductManager.js';
+import productManager from "../src/managers/product.manager.js"
+import chatManager from "../src/managers/chat.manager.js"
 
-
-const path = "./data/products.json";
-const productManager = new ProductManager(path);
 
 const route = Router();
 
@@ -19,12 +17,14 @@ route.get('/',async (req,res) => {
 route.get('/realtimeproducts', async(req,res) => {
 
     const products =  await productManager.getProducts();
-
     res.render("realTimeProducts",{products:products})
     
 
 })
 
+route.get('/chat', async(req,res) => {
+    const chat =  await chatManager.getAll();
+    res.render("chat",{chat:chat})
 
-
+})
 export default route;

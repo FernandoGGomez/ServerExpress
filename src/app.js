@@ -4,9 +4,11 @@ import  express  from 'express';
 import productRoute from '../routes/products.routes.js'
 import cartRoute from '../routes/carts.routes.js'
 import viewsRoute from '../routes/views.router.js'
+// import viewChat from '../routes/chat.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
 import configureSocket from '../socket/configure-socket.js';
+import  mongoose  from 'mongoose';
 
 
 const {__dirname} = fileDirName(import.meta)
@@ -24,7 +26,7 @@ app.use('/api/products',productRoute)
 app.use('/api/carts',cartRoute)
 
 app.use('/',viewsRoute)
-
+// app.use('/chat',viewChat)
 
 const port = 8080
 
@@ -34,3 +36,5 @@ const http = app.listen(port,()=> {
 
 
 configureSocket(http);
+
+mongoose.connect("mongodb://0.0.0.0/ecommerce",{useNewUrlParser: true,useUnifiedTopology:true});

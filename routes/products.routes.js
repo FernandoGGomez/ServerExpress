@@ -1,13 +1,10 @@
 import  express  from 'express';
 import { Router } from 'express';
-import { ProductManager } from '../src/ProductManager.js';
 import { uploader } from '../uploader.js';
+import productManager from '../src/managers/product.manager.js';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}))
-const path = "./data/products.json";
-
-const productManager = new ProductManager(path) //genero una nueva instancia de la clase ProductManager
 
 route.get("/",async (req,res)=>{
 
@@ -38,13 +35,14 @@ route.get("/:pid",async (req,res)=>{
     const {pid} = req.params;
 
     const productoFiltrado =  await productManager.getProductById(pid);
-    if(typeof(productoFiltrado) !== "object"){
+    console.log(productoFiltrado)
+    if(!productoFiltrado){
 
         return res.status(404).send({Error: `El Producto con el id ${pid} no existe`}) 
 
     }
 
-    res.send(productoFiltrado) 
+    res.status(200).send(productoFiltrado) 
 
    
 });
@@ -56,34 +54,51 @@ route.post("/",uploader.single("thumbnail"), async (req,res)=>{
   
     const productoAgregado = await productManager.addProduct(product,img);
 
-    if(!productoAgregado){
+    if(typeof productoAgregado === "string"){
 
-        return res.status(404).send({Error:"Producto no válido ,faltan campos"})
+        return res.status(404).send({Error: productoAgregado})
+    }else if(!productoAgregado){
+        return res.status(404).send({Error: "All fields are required"})
     }
     
     res.status(200).send({product});
 
 })
 
+
+route.put("/",async (req,res)=>{
+    return res.status(400).send({Error: `Debe proporcionar el Id del producto a actualizar `})
+})
+
 route.put("/:pid",async (req,res)=>{
 
     const {pid} = req.params;
-    const {id} = req.body; 
+    const {_id} = req.body; 
     
+    if(_id){
+        return res.status(400).send({Error: `No se puede modificar el id del producto ${pid} `})
+    }
+
     const productoFiltrado =  await productManager.getProductById(pid);
-    if(typeof(productoFiltrado) !== "object"){
+    console.log("El console.log en products.routes",productoFiltrado)
+
+    if(!productoFiltrado){
 
         return res.status(404).send({Error: `El Producto con el id ${pid} no existe`}) 
 
     }
 
-    if(id){
-        return res.status(400).send({Error: `No se puede modificar el id del producto ${pid} `})
-    }
-
-    await productManager.modificar(pid,req.body)
     
-    res.status(200).send(productoFiltrado) 
+
+     await productManager.updateProduct(pid,req.body)
+     
+     const updatedProduct = await productManager.getProductById(pid);
+     if(updatedProduct){
+
+        res.status(200).send(updatedProduct) 
+    
+    }
+    
 
 })
 
@@ -91,8 +106,8 @@ route.delete("/:pid",async (req,res)=>{
 
     const {pid} = req.params;
     const productoFiltrado =  await productManager.getProductById(pid);
-
-    if(typeof(productoFiltrado) !== "object"){
+   
+    if(!productoFiltrado){
 
         return res.status(404).send({Error: `El Producto con el id ${pid} no existe`}) 
 

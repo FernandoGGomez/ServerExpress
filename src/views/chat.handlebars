@@ -1,0 +1,38 @@
+<div class="d-flex mx-5 justify-content-center my-5">
+    <div class=" d-flex  flex-column border me-4" style="width: 800px;">
+        <h2 class="text-center mt-3">Escriba Su Mensaje</h2>
+        <div>
+           
+                <form onsubmit="sendMessage(event)" class="my-5 mx-5 d-flex flex-column">
+                    <input id="email" type="email" placeholder="E-mail">
+                    <textarea id="message" class="my-5" style="resize:none;" title="message" placeholder="Escriba aquí su mensaje"></textarea>
+                    
+                    <div class="d-flex justify-content-center" >
+                        <input type="submit" value="Enviar Mensaje"></button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="contenedor-chat" class="d-flex flex-column align-items-center justify-content-center">
+
+       {{#each chat}}
+    <div class="text-center col-8 ">
+        <div class="border">
+            <h2>{{this.user}}</h2>
+
+            <h3>{{this.message}}</h3> 
+        </div>
+           
+
+    </div>
+    {{/each}}
+
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="../public/js/chat.js"></script>   
