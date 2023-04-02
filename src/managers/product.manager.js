@@ -10,11 +10,11 @@ class ProductManager{
     }
 
     async addProduct(product,img){
-        const {title,description,price,code,status,stock} = product;
+        const {title,description,price,code,status,stock,category} = product;
         const products = await this.getProducts();
         const codeExist = products.some(prod => prod.code === code ) //Valido que el código no exista
         
-        if(title && description && price && code && stock){ // Valido que todos los campos estén completados
+        if(title && description && price && code && stock && category){ // Valido que todos los campos estén completados
 
             if (codeExist){
 
@@ -31,6 +31,7 @@ class ProductManager{
                     code: code,
                     status: typeof status === "boolean" ? status : true,
                     stock: stock,
+                    category: category
                 };
 
 
