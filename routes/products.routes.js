@@ -2,6 +2,7 @@ import  express  from 'express';
 import { Router } from 'express';
 import { uploader } from '../uploader.js';
 import productManager from '../src/managers/product.manager.js';
+import { productsModel } from '../src/dao/models/products.model.js';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}))
@@ -9,22 +10,36 @@ route.use(express.urlencoded({extended: true}))
 route.get("/",async (req,res)=>{
 
     const query = req.query;
-    const limit = query.limit;
-    const productos =  await productManager.getProducts();
+    const limit = query.limit? query.limit: 10;
+    const page = query.page ? query.page : 1;
+    const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
+    const category = query.category
+    const status = query.status
 
-    if(limit !== ""){
 
-        if(limit > productos.length){
-            return res.status(400).send(`No contamos con esa cantidad de productos, actualmente contamos con ${productos.length} tipos de productos`);
-        }
-        const products = productos.slice(0,limit)
-      
-        return res.send(products);
+       
+        const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
+       
+        res.render("products",{
+            products:products.docs,
+            pages: products.totalPages,
+            page: products.page,
+            prev: products.prevPage,
+            next: products.nextPage,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage?"linkPrev" :null,
+            nextLink:products.hasNextPage?"linkNext" :null ,
+        });
+
      
-    }
-   
-    res.send({productos})
 
+    
+   
+    
+   
+   
+    
 })
 
 
