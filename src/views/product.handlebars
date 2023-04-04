@@ -1,0 +1,21 @@
+<div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
+
+<div class="d-flex flex-column col-4 border mx-4 my-4 p-5">
+        <p class="h5"><b>Id: {{product._id}}</b> </p>
+        
+        <p class="h5">{{product.category}}</p>
+        <p class="h3">{{product.title}}</p>
+        <p class="description">{{product.description}}</p>
+        <p class="stock text-align-left h4">Stock: {{product.stock}}</p>
+        <p class="precio text-ends h3 ">$ {{product.price}}</p>
+        {{#if product.status}}
+            <p class="text-ends h3" style="color: green;">Disponible</p>
+        {{else}}
+            <p class="text-ends h3" style="color: red;">No disponible</p>
+        {{/if}} 
+        <div class="text-center my-5">
+                <button type="button" onclick='addToCart("{{this._id}}")' class="btn btn-primary">Agregar al carrito</button>
+            </div>
+        </div>
+    </div>
+    </div>
