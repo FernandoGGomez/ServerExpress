@@ -41,7 +41,7 @@ class CartManager{
     async getCartById(id){
 
         try{
-            const cart = await this.persistencia.findById(id); //recupero los datos del archivo .json
+            const cart = await this.persistencia.findById(id); 
         
             if(cart){ //si existe el carrito lo retorno  
                 return cart;
@@ -102,12 +102,95 @@ class CartManager{
         
       }
 
+
+
+      async updateCart(cid,data){
+
+        try{
+
+            console.log("DATA: ",data)
+            const updated= await this.persistencia.updateOne(cid,{cart:data})
+            
+            if (updated){
+                return true
+            }
+                
+            
+        }catch(error){
+
+            console.log("ERROR: ",error)
+            throw error
+
+        }
+        
+      }
+
+
+
+    async updateProductInCart(cid,data){
+
+        try{
+
+            const carritoCargado = await this.getCartById(cid);
+            const product = data.product
+            console.log("DATA: ",data)
+            if(Array.isArray(carritoCargado.cart) ){
+                console.log("CARRITO CARGADO : ",carritoCargado.cart)
+                const productIndex = carritoCargado.cart.findIndex(prod => prod.product === product)
+
+                if(productIndex !== -1){
+                    carritoCargado.cart[productIndex] = {...carritoCargado.cart[productIndex],...data}
+                }
+                console.log("CARRITOCARGADOMODIFICADO",carritoCargado.cart)
+                const updated= await this.persistencia.updateOne(cid,{cart:carritoCargado.cart})
+                if (updated){
+                    return true
+                }
+            }else{
+                console.log("CARRITOCARGADO.CART no es un array")
+            }
+
+            console.log("DATA: ",data)
+            
+                     
+            
+        }catch(error){
+
+            console.log("ERROR: ",error)
+            throw error
+
+        }
+
+
+    }
+
     async deleteCart(id){
         
         this.persistencia.deleteOne({id:id})
 
     }
 
+    async deleteProduct(cid, pid){
+
+        const carritoCargado = await this.getCartById(cid);
+        if(!carritoCargado) {
+          throw new Error('Carrito no encontrado')
+        }
+
+        console.log("CID: ",cid)
+        console.log("CARRITOCARGADO: ",carritoCargado)
+        const productoEnCarrito = carritoCargado.cart.find(element => element.product === pid);
+        console.log("producto= ",carritoCargado.cart.map(p => p.product ))
+        console.log("pid: ",pid)
+        console.log("ProductoEnCarrito: ",productoEnCarrito)
+        if(productoEnCarrito){
+
+            const carritoSinElProducto = carritoCargado.cart.filter(element => element.product !== pid)
+            this.persistencia.updateOne(cid,{cart: carritoSinElProducto})
+
+            return true
+        }
+    }
 }
 
 
