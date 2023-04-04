@@ -1,29 +1,70 @@
-<div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
-     {{#each products}}
-    <div class="d-flex flex-column col-4 border mx-4 my-4">
-        <p class="h5"><b>Id:</b> {{this._id}}</p>
-        <p class="h5">{{this.category}}</p>
-        <p class="h3">{{this.title}}</p>
-        <p class="description">{{this.description}}</p>
-        <p class="stock text-align-left h4">Stock: {{this.stock}}</p>
-        <p class="precio text-ends h3 ">$ {{this.price}}</p>
-        {{#if this.status}}
-            <p class="text-ends h3" style="color: green;">Disponible</p>
-        {{else}}
-            <p class="text-ends h3" style="color: red;">No disponible</p>
-        {{/if}} 
-    </div>
-    {{/each}}
-</div>
+{{#if errorPage}}
+    <h1>No existe la pagina {{page}}</h1>
 
-<div class="d-flex justify-content-center">
-    <div class="border mx-5">
-        {{prev}}
-    </div>
-    <div class="border mx-5">
-        {{page}}
-    </div>
-    <div class="border mx-5">
-        {{next}}
-    </div>
-</div>
+    {{else}}
+
+        {{#if errorPage2}}
+            <h1>El número de página debe ser un número </h1>
+       
+        {{else}}
+        <div class="d-flex justify-content-center my-5">
+            {{#if prev}}
+            <button onclick="prevPage()" class="border mx-5 h4">
+                {{prev}}
+            </button>
+            {{/if}}
+            <div class="border mx-5 h3 bg-warning">
+                {{page}}
+            </div>
+            {{#if next}}
+            <button onclick="nextPage()" class="border mx-5 h4">
+                {{next}}
+            </button>
+            {{/if}}
+        </div>
+            <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
+            {{#each products}}
+   
+            <div class="d-flex flex-column col-4 border mx-4 my-4">
+                <a style="text-decoration: none;color:black;" class="p-5" href='/api/products/{{this._id}}'>
+                    <p class="h5"><b>Id:</b> {{this._id}}</p>
+                    <p class="h5">{{this.category}}</p>
+                    <p class="h3">{{this.title}}</p>
+                    <p class="description">{{this.description}}</p>
+                    <p class="stock text-align-left h4">Stock: {{this.stock}}</p>
+                    <p class="precio text-ends h3 ">$ {{this.price}}</p>
+                    {{#if this.status}}
+                        <p class="text-ends h3" style="color: green;">Disponible</p>
+                    {{else}}
+                        <p class="text-ends h3" style="color: red;">No disponible</p>
+                    {{/if}} 
+                </a>
+
+                <div class="text-center my-5">
+                        <button type="button" onclick='addToCart("{{this._id}}")' class="btn btn-primary">Agregar al carrito</button>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+
+        <div class="d-flex justify-content-center">
+            {{#if prev}}
+            <button onclick="prevPage()" class="border mx-5 h4">
+                {{prev}}
+            </button>
+            {{/if}}
+            <div class="border mx-5 h3 bg-warning">
+                {{page}}
+            </div>
+            {{#if next}}
+             <button onclick="nextPage()" class="border mx-5 h4">
+                {{next}}
+            </button>
+            {{/if}}
+        </div>
+         {{/if}}
+{{/if}}
+
+
+
+<script src="../public/js/products.js"></script>
