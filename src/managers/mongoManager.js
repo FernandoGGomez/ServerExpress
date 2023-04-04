@@ -34,7 +34,6 @@ export class MongoManager{
             return newEntity
 
         }catch(error){
-            console.log("la entidad que le paso : ",entity )
             console.log("el error",error)
             throw error
 
@@ -56,9 +55,12 @@ export class MongoManager{
 
         try{
 
+            console.log("ID: ",id)
             console.log("Data: " ,data)
             const entity = await this.model.updateOne({_id:id},data)
-
+            if(entity.matchedCount === 1){
+                return true
+            }
         }catch(error){
             console.log("el ERROR: ",error)
             throw error
@@ -67,6 +69,7 @@ export class MongoManager{
         }
 
     }
+
 
     async deleteOne(id){
         if(id){
