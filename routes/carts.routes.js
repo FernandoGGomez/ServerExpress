@@ -99,7 +99,7 @@ route.put("/:cid/products/:pid",async(req,res)=>{
         const data = {product:pid,quantity:Number(quantity)}
         const cart = await cartManager.getCartById(cid);
 
-        if(typeof(cart) !== "object"){
+        if(!cart){
 
             return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
              
@@ -112,10 +112,13 @@ route.put("/:cid/products/:pid",async(req,res)=>{
 
         }
 
+        try{
+            await cartManager.updateProductInCart(cid,data)
 
-        await cartManager.updateProductInCart(cid,data)
-
-        res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
+            res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
+        }catch(error){
+            res.status(404).send({"Error":`El carrito con el id ${cid} no existe`})
+        }
     }else{
 
         res.status(400).send({"Error":"Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico"})
@@ -144,10 +147,12 @@ route.delete("/:cid/products/:pid",async(req,res)=>{
 
     }
 
-    const productoEliminado =   await cartManager.deleteProduct(cid,pid)
+        const productoEliminado =   await cartManager.deleteProduct(cid,pid)
 
      if(productoEliminado){
         res.status(200).send(cart)
+     }else{
+        res.status(400).send({Error:"No se puede eliminar"})
      }
 
 

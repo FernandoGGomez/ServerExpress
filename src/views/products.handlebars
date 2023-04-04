@@ -1,3 +1,6 @@
+{{#if errorStatus}}
+    <h1>Para filtrar por disponibilidad debe escribir true o false</h1>
+{{else}}
 {{#if errorPage}}
     <h1>No existe la pagina {{page}}</h1>
 
@@ -65,6 +68,6 @@
          {{/if}}
 {{/if}}
 
-
+{{/if}}
 
 <script src="../public/js/products.js"></script>

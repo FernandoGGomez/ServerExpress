@@ -25,14 +25,17 @@ route.get('/products',async(req,res)=>{
     const page = query.page ? query.page : 1;
     const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
     const category = query.category
-    const status = query.status
+    const status = query.status == "true" ? query.status : query.status == "false" ? query.status : undefined
 
     let errorPage;
     let errorPage2;
-       
+    let errorStatus;
         const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
        console.log("prevLink: ",products)
 
+       if(typeof status == "undefined"){
+            errorStatus = true
+       }
        if(page > products.totalPages ){
             errorPage = true
        }else if(isNaN(page)){
@@ -52,7 +55,8 @@ route.get('/products',async(req,res)=>{
             prevLink: products.hasPrevPage?"linkPrev" :null,
             nextLink:products.hasNextPage?"linkNext" :null ,
             errorPage: errorPage,
-            errorPage2: errorPage2
+            errorPage2: errorPage2,
+            errorStatus:  errorStatus
         });
 
 

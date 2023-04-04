@@ -22,7 +22,7 @@ export class MongoManager{
             return entity
 
         }catch(error){
-            console.log("hubo un error")
+            console.log(`No existe un elemento con id: ${id}`)
             throw error
             
         }

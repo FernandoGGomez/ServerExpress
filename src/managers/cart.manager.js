@@ -48,7 +48,7 @@ class CartManager{
         }catch(error){
 
 
-            throw error
+            return false
         }
     
 
@@ -65,13 +65,17 @@ class CartManager{
        
      
         const productoEnCarrito = JSON.parse(JSON.stringify(carritoCargado)).cart.find(element => element.product === pid);
+        const indiceProductoEnCarrito = JSON.parse(JSON.stringify(carritoCargado)).cart.findIndex(element => element.product === pid);
 
+        console.log("PRODUCTO EN CARRITO: ",productoEnCarrito)
+        console.log("CART[index]: ",carritoCargado.cart[indiceProductoEnCarrito])
         if(productoEnCarrito){
             
-            
+            console.log("SI existe")
             //si existe el producto en el carrito
-            const productoModificado = {product:pid,quantity:productoEnCarrito.quantity += 1}
-            const carritoModificado = {...carritoCargado.cart,...productoModificado}
+            const productoModificado = {...JSON.parse(JSON.stringify(carritoCargado.cart))[indiceProductoEnCarrito], quantity: productoEnCarrito.quantity + 1};
+            console.log("PRODUCTO MODIFICADO : ",productoModificado)
+            const carritoModificado = [...JSON.parse(JSON.stringify(carritoCargado.cart)).slice(0, indiceProductoEnCarrito), productoModificado, ...JSON.parse(JSON.stringify(carritoCargado.cart)).slice(indiceProductoEnCarrito + 1)];
          
             this.persistencia.updateOne(cid,{cart:carritoModificado})
 
@@ -80,6 +84,7 @@ class CartManager{
 
 
         } else{
+            console.log("No existe")
 
             //No existe el producto en el carrito
 
@@ -98,7 +103,6 @@ class CartManager{
 
         try{
 
-            console.log("DATA: ",data)
             const updated= await this.persistencia.updateOne(cid,{cart:data})
             
             if (updated){
@@ -108,8 +112,7 @@ class CartManager{
             
         }catch(error){
 
-            console.log("ERROR: ",error)
-            throw error
+           return new  Error
 
         }
         
@@ -121,30 +124,32 @@ class CartManager{
 
         try{
 
+            console.log("DATA: ",data)
             const carritoCargado = await this.getCartById(cid);
             const product = data.product
             if(Array.isArray(carritoCargado.cart) ){
              
-                const productIndex = carritoCargado.cart.findIndex(prod => prod.product === product)
-
+                const productIndex = JSON.parse(JSON.stringify(carritoCargado.cart)).findIndex(prod => prod.product === product)
+                console.log("CArritocargado.cart: ",JSON.parse(JSON.stringify(carritoCargado.cart)))
                 if(productIndex !== -1){
                     carritoCargado.cart[productIndex] = {...carritoCargado.cart[productIndex],...data}
+                    const updated= await this.persistencia.updateOne(cid,{cart:carritoCargado.cart})
+                    console.log("UPDATED:",updated)
+                    if (updated){
+                        return true
+                    }
                 }
              
-                const updated= await this.persistencia.updateOne(cid,{cart:carritoCargado.cart})
-
-                if (updated){
-                    return true
-                }
+               
             }else{
-                console.log("CARRITOCARGADO.CART no es un array")
+               return new Error
             }
                    
             
         }catch(error){
 
-            console.log("ERROR: ",error)
-            throw error
+           
+            return new Error
 
         }
 
@@ -160,24 +165,30 @@ class CartManager{
     async deleteProduct(cid, pid){
 
         const carritoCargado = await this.getCartById(cid);
+        console.log("CARRITO CARGADO,",carritoCargado)
         if(!carritoCargado) {
           throw new Error('Carrito no encontrado')
         }
 
-        const productoEnCarrito = carritoCargado.cart.find(element => element.product === pid);
+        const productoEnCarrito = JSON.parse(JSON.stringify(carritoCargado.cart)).find(element => element.product === pid);
 
         if(productoEnCarrito){
 
-            const carritoSinElProducto = carritoCargado.cart.filter(element => element.product !== pid)
-            this.persistencia.updateOne(cid,{cart: carritoSinElProducto})
+            const carritoSinElProducto = JSON.parse(JSON.stringify(carritoCargado.cart)).filter(element => element.product !== pid)
+            try{
+                await this.persistencia.updateOne(cid,{cart: carritoSinElProducto})
+                return true
+            }catch(error){
+                console.log("NO se puede")
+                return false
+            }
+                
 
-            return true
+          
         }
     }
 }
 
-
-// export {CartManager};
 
 const instancia = new CartManager(new MongoManager(cartsModel));
 export default instancia;
