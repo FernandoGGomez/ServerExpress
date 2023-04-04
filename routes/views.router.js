@@ -3,6 +3,7 @@ import productManager from "../src/managers/product.manager.js"
 import chatManager from "../src/managers/chat.manager.js"
 import { productsModel } from '../src/dao/models/products.model.js';
 import { cartsModel } from "../src/dao/models/cart.model.js";
+import { stat } from 'fs';
 
 
 
@@ -25,16 +26,19 @@ route.get('/products',async(req,res)=>{
     const page = query.page ? query.page : 1;
     const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
     const category = query.category
-    const status = query.status == "true" ? query.status : query.status == "false" ? query.status : undefined
+    const status = query.status == "true" ? query.status : query.status == "false" ? query.status : 1;
+    console.log("Status", status)
 
     let errorPage;
     let errorPage2;
     let errorStatus;
         const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
-       console.log("prevLink: ",products)
+     
 
-       if(typeof status == "undefined"){
+       if(  status !== "true" && status !== "false"){
             errorStatus = true
+       }else{
+        errorStatus = false
        }
        if(page > products.totalPages ){
             errorPage = true

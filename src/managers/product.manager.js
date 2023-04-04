@@ -108,7 +108,7 @@ class ProductManager{
 }
 
 
-// export {ProductManager};
+
 
 const instancia = new ProductManager(new MongoManager(productsModel))
 
