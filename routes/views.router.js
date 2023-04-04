@@ -27,7 +27,6 @@ route.get('/products',async(req,res)=>{
     const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
     const category = query.category
     const status = query.status == "true" ? query.status : query.status == "false" ? query.status : 1;
-    console.log("Status", status)
 
     let errorPage;
     let errorPage2;
@@ -74,7 +73,7 @@ route.get('/carts/:cid',async(req,res)=>{
     try{
 
         const cart = await cartsModel.find({_id:cid}).populate("cart.product");
-        console.log("CART: ",JSON.parse(JSON.stringify(cart[0].cart)))
+   
         if (!cart) {
             throw new Error;
           }
