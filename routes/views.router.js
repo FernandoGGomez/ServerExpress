@@ -66,6 +66,7 @@ route.get('/carts/:cid',async(req,res)=>{
     try{
 
         const cart = await cartsModel.find({_id:cid}).populate("cart.product");
+        console.log("CART: ",JSON.parse(JSON.stringify(cart[0].cart)))
         if (!cart) {
             throw new Error;
           }
