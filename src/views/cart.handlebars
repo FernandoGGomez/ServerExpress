@@ -1,0 +1,32 @@
+{{#if cartError}}
+    <h1>El carrito con el id {{cid}} no existe</h1>
+
+    {{else}}
+
+        <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
+
+        {{#each cart}}
+            
+                <div class="d-flex flex-column col-4 border mx-4 my-4">
+                    <p class="h5"><b>Id: {{this.product._id}}</b> </p>
+                    
+                    <p class="h5">{{this.product.category}}</p>
+                    <p class="h3">{{this.product.title}}</p>
+                    <p class="description">{{this.product.description}}</p>
+                    <p class="stock text-align-left h4">Stock: {{this.product.stock}}</p>
+                    <p class="precio text-ends h3 ">$ {{this.product.price}}</p>
+                    {{#if this.product.status}}
+                        <p class="text-ends h3" style="color: green;">Disponible</p>
+                    {{else}}
+                        <p class="text-ends h3" style="color: red;">No disponible</p>
+                    {{/if}} 
+
+                    <div class="d-flex justify-content-end">
+                        <p class="text-ends h3">Cantidad: {{this.quantity}}</p>
+                    </div>
+                </div>
+
+            {{/each}}
+            </div>
+            </div>
+{{/if}}
