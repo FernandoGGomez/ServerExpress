@@ -10,36 +10,29 @@ route.use(express.urlencoded({extended: true}))
 route.get("/",async (req,res)=>{
 
     const query = req.query;
-    const limit = query.limit? query.limit: 10;
-    const page = query.page ? query.page : 1;
+    const limit =  !isNaN(query.limit) ?  query.limit : 10;
+    const page = !isNaN(query.page) ? query.page : 1;
     const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
     const category = query.category
     const status = query.status
 
-
+    
        
         const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
-       
-        res.render("products",{
-            products:products.docs,
-            pages: products.totalPages,
+
+        console.log("Products",products)
+
+        res.status(200).send({
+            payload:products.docs,
+            totalPages: products.totalPages,
+            prevPage: products.prevPage,
+            nextPage: products.nextPage,
             page: products.page,
-            prev: products.prevPage,
-            next: products.nextPage,
             hasPrevPage: products.hasPrevPage,
             hasNextPage: products.hasNextPage,
             prevLink: products.hasPrevPage?"linkPrev" :null,
             nextLink:products.hasNextPage?"linkNext" :null ,
-        });
-
-     
-
-    
-   
-    
-   
-   
-    
+        });  
 })
 
 
@@ -57,8 +50,9 @@ route.get("/:pid",async (req,res)=>{
 
     }
 
-    res.status(200).send(productoFiltrado) 
-
+    // res.status(200).send(productoFiltrado)
+    console.log("PeoductoFiltrado",productoFiltrado) 
+    res.render("product",{product:JSON.parse(JSON.stringify(productoFiltrado))})
    
 });
 
