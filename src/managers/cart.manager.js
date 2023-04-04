@@ -21,11 +21,7 @@ class CartManager{
         }
         
 
-        }
-        
-      
-
-    
+        }  
 
     async getAll() {
         try {
@@ -67,35 +63,29 @@ class CartManager{
           throw new Error('Carrito no encontrado')
         }
        
-        console.log("CARRITO CARGADO: ",JSON.parse(JSON.stringify(carritoCargado.cart)))
+     
         const productoEnCarrito = JSON.parse(JSON.stringify(carritoCargado)).cart.find(element => element.product === pid);
 
-        console.log("ProductoEnCarrito: ",productoEnCarrito)
         if(productoEnCarrito){
             
             
             //si existe el producto en el carrito
             const productoModificado = {product:pid,quantity:productoEnCarrito.quantity += 1}
-            console.log("productoModificado: ",productoModificado)
-            console.log("carritoCargado: ",carritoCargado.cart)
-             const carritoModificado = {...carritoCargado.cart,...productoModificado}
+            const carritoModificado = {...carritoCargado.cart,...productoModificado}
          
-
-            // const data = {cart:{product: productoEnCarrito.product,quantity: productoEnCarrito.quantity += 1}}
             this.persistencia.updateOne(cid,{cart:carritoModificado})
-            console.log("Si existe")
+
             return true
      
 
 
         } else{
 
-            carritoCargado.cart.push({product:pid,quantity:+1})
-            const carritoModificado = carritoCargado.cart
-            console.log("CarritoModificado: ",carritoModificado)
             //No existe el producto en el carrito
+
+            carritoCargado.cart.push({product:pid,quantity:+1})
+            const carritoModificado = carritoCargado.cart        
             const data = {cart:carritoModificado}
-            console.log("Si no existe")
             this.persistencia.updateOne(cid,data)
             return true
         }
@@ -133,26 +123,23 @@ class CartManager{
 
             const carritoCargado = await this.getCartById(cid);
             const product = data.product
-            console.log("DATA: ",data)
             if(Array.isArray(carritoCargado.cart) ){
-                console.log("CARRITO CARGADO : ",carritoCargado.cart)
+             
                 const productIndex = carritoCargado.cart.findIndex(prod => prod.product === product)
 
                 if(productIndex !== -1){
                     carritoCargado.cart[productIndex] = {...carritoCargado.cart[productIndex],...data}
                 }
-                console.log("CARRITOCARGADOMODIFICADO",carritoCargado.cart)
+             
                 const updated= await this.persistencia.updateOne(cid,{cart:carritoCargado.cart})
+
                 if (updated){
                     return true
                 }
             }else{
                 console.log("CARRITOCARGADO.CART no es un array")
             }
-
-            console.log("DATA: ",data)
-            
-                     
+                   
             
         }catch(error){
 
@@ -177,12 +164,8 @@ class CartManager{
           throw new Error('Carrito no encontrado')
         }
 
-        console.log("CID: ",cid)
-        console.log("CARRITOCARGADO: ",carritoCargado)
         const productoEnCarrito = carritoCargado.cart.find(element => element.product === pid);
-        console.log("producto= ",carritoCargado.cart.map(p => p.product ))
-        console.log("pid: ",pid)
-        console.log("ProductoEnCarrito: ",productoEnCarrito)
+
         if(productoEnCarrito){
 
             const carritoSinElProducto = carritoCargado.cart.filter(element => element.product !== pid)

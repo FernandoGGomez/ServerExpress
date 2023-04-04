@@ -21,12 +21,6 @@ route.get("/:cid",async(req,res)=>{
     }catch(error){
         return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
     }
-    // console.log("CARTERROR: ",cart)
-    // console.log("CART: ",cart[0].cart)
-
-
-    
-
 
 })
 
@@ -103,8 +97,8 @@ route.put("/:cid/products/:pid",async(req,res)=>{
     if(!isNaN(Number(quantity))){
 
         const data = {product:pid,quantity:Number(quantity)}
-        console.log("QUANTITY",quantity)
         const cart = await cartManager.getCartById(cid);
+
         if(typeof(cart) !== "object"){
 
             return res.status(400).send({error:`El carrito con el id ${cid} no existe`})

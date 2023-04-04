@@ -54,9 +54,6 @@ export class MongoManager{
     async updateOne(id,data){
 
         try{
-
-            console.log("ID: ",id)
-            console.log("Data: " ,data)
             const entity = await this.model.updateOne({_id:id},data)
             if(entity.matchedCount === 1){
                 return true
@@ -76,8 +73,7 @@ export class MongoManager{
             try{
             
                 const deleted = await this.model.deleteOne({_id:id})
-
-                console.log("la newEntity",deleted.deletedCount)
+                
                 if(deleted.deletedCount > 0){
                     return true
                 }

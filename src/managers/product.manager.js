@@ -63,8 +63,9 @@ class ProductManager{
     async getProductById(id){
 
         try{
+
             const product = await this.persistencia.findById(id) 
-            console.log("El PRODUCT: ",product)
+     
             if(product !== null && !product.hasOwnProperty("stock")){
                 return product; //si existe el producto lo retorno
             }else{
@@ -80,39 +81,6 @@ class ProductManager{
        
 
     }
-
-    // async updateProduct(id,field,value){   
-       
-    //     const product = await this.getProductById(id)
-
-
-
-    //     if(!product){
-    //         console.error("The product with id " + id + " doesn't exist") //si no existe retorno un mensaje de error
-    //         return
-    //     }
-
-    //     if(field === "id"){   //si el campo a modificar es el de "id" retorno un mensaje de error
-    //         console.error(`Can't modify "id" field`)
-    //         return
-    //     }
-
-    //     const fieldExist = this.#products.some(prod => prod[field]); //valido si el campo a modificar existía previamente
-        
-    //     if(!fieldExist){  //si no existía devuelvo un mensaje de error
-    //         console.log(`The field ${field} can't be modify because doesn't exist`);
-    //         return
-    //     }
-
-        
-    //     const campo = product[field]  //modifico el campo solicitado con el valor solicitado
-
-    //    this.persistencia.findByIdAndUpdate(id,campo, value)
-
-
-
-    // }
-
 
     async updateProduct(id, datos) {
        try{
