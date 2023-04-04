@@ -67,8 +67,8 @@ class CartManager{
           throw new Error('Carrito no encontrado')
         }
        
-        console.log("CARRITO CARGADO: ",carritoCargado.cart)
-        const productoEnCarrito = carritoCargado.cart.find(element => element.product === pid);
+        console.log("CARRITO CARGADO: ",JSON.parse(JSON.stringify(carritoCargado.cart)))
+        const productoEnCarrito = JSON.parse(JSON.stringify(carritoCargado)).cart.find(element => element.product === pid);
 
         console.log("ProductoEnCarrito: ",productoEnCarrito)
         if(productoEnCarrito){
@@ -78,7 +78,7 @@ class CartManager{
             const productoModificado = {product:pid,quantity:productoEnCarrito.quantity += 1}
             console.log("productoModificado: ",productoModificado)
             console.log("carritoCargado: ",carritoCargado.cart)
-             const carritoModificado = carritoCargado.cart
+             const carritoModificado = {...carritoCargado.cart,...productoModificado}
          
 
             // const data = {cart:{product: productoEnCarrito.product,quantity: productoEnCarrito.quantity += 1}}
