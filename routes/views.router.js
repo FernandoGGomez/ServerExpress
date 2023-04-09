@@ -34,7 +34,7 @@ route.get('/products',async(req,res)=>{
         const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
      
 
-       if(  status !== "true" && status !== "false"){
+       if(  status !== "true" && status !== "false" && status !== 1){
             errorStatus = true
        }else{
         errorStatus = false
