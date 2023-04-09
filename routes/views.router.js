@@ -4,6 +4,7 @@ import chatManager from "../src/managers/chat.manager.js"
 import { productsModel } from '../src/dao/models/products.model.js';
 import { cartsModel } from "../src/dao/models/cart.model.js";
 import { stat } from 'fs';
+import { usersModel } from '../src/dao/models/user.model.js';
 
 
 
@@ -13,14 +14,14 @@ const route = Router();
 
 route.get('/',async (req,res) => {
 
-    const products =  await productManager.getProducts();
     
-    res.render('index',{products: products})
+    
+    res.redirect('/login')
 
 })
 
 route.get('/products',async(req,res)=>{
-
+    const email = req.session.user
     const query = req.query;
     const limit =  !isNaN(query.limit) ?  query.limit : 10;
     const page = query.page ? query.page : 1;
@@ -31,10 +32,11 @@ route.get('/products',async(req,res)=>{
     let errorPage;
     let errorPage2;
     let errorStatus;
-        const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
+
+    const products =  await productsModel.paginate(category && status?{category:category,status:status}:category?{category:category}:status?{status:status}:{},{limit:limit,page:page,sort:{price:sort},lean:true});
      
 
-       if(  status !== "true" && status !== "false"){
+       if(  status !== "true" && status !== "false" && status !== 1){
             errorStatus = true
        }else{
         errorStatus = false
@@ -47,7 +49,8 @@ route.get('/products',async(req,res)=>{
             
 
        }
-        res.render("products",{
+       if(!email){
+       return res.render("products",{
             products:products.docs,
             pages: products.totalPages,
             page: products.page,
@@ -61,7 +64,47 @@ route.get('/products',async(req,res)=>{
             errorPage2: errorPage2,
             errorStatus:  errorStatus
         });
-
+    }else{
+        const user = await usersModel.findOne({email})
+        console.log("USER: ",user)
+       if(user){ 
+        
+        res.render("products",{
+            name: user.name,
+            rol: user.rol,
+            email:user.email,
+            products:products.docs,
+            pages: products.totalPages,
+            page: products.page,
+            prev: products.prevPage,
+            next: products.nextPage,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage?"linkPrev" :null,
+            nextLink:products.hasNextPage?"linkNext" :null ,
+            errorPage: errorPage,
+            errorPage2: errorPage2,
+            errorStatus:  errorStatus
+        });
+    }else{
+        res.render("products",{
+            rol: "admin",
+            email:email,
+            products:products.docs,
+            pages: products.totalPages,
+            page: products.page,
+            prev: products.prevPage,
+            next: products.nextPage,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage?"linkPrev" :null,
+            nextLink:products.hasNextPage?"linkNext" :null ,
+            errorPage: errorPage,
+            errorPage2: errorPage2,
+            errorStatus:  errorStatus
+        });
+    }
+    }
 
 })
 
@@ -95,6 +138,40 @@ route.get('/realtimeproducts', async(req,res) => {
 route.get('/chat', async(req,res) => {
     const chat =  await chatManager.getAll();
     res.render("chat",{chat:chat})
+
+})
+
+route.get('/register',(req,res)=>{
+
+    res.render("register")
+
+})
+
+route.get('/login',(req,res)=>{
+
+    res.render("login")
+
+})
+
+route.get("/perfil",async(req,res)=>{
+
+    const email = req.session.user
+
+    console.log("EMAIL: ",email)
+    if(!email){
+        return res.render("perfil",{
+            status:false,
+        })
+    }
+
+    const user = await usersModel.findOne({email})
+    res.render("perfil",{
+        status:true,
+        name: user.name,
+        last_name: user.last_name,
+        age: user.age,
+        email: user.email
+    })
 
 })
 export default route;

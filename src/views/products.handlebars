@@ -25,6 +25,17 @@
             </button>
             {{/if}}
         </div>
+
+        {{#if email}}
+
+            <div>
+                <h3>Bienvenido {{name}}!</h3>
+                <h4>{{email}}</h4>
+                <h4>rol: {{rol}}</h4>  
+                <button onclick="logout()">Cerrar Sesión</button>  
+            </div>
+        {{/if}}
+
             <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
             {{#each products}}
    
@@ -71,3 +82,4 @@
 {{/if}}
 
 <script src="../public/js/products.js"></script>
+<script src="../public/js/logout.js"></script>

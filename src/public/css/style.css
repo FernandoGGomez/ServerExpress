@@ -1,0 +1,48 @@
+.border-form{
+    border: 2px solid rgba(0, 255, 64, 0.95)!important;
+    
+}
+
+.bg{
+    height: 100vh;
+    background:  linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+}
+.labelRegister{
+    color: floralwhite;
+    font-weight: bold;
+    font-size: 1.5rem;
+    filter: drop-shadow(rgba(0, 255, 64, 0.95) 0px 0px 2.20251px) drop-shadow(rgba(0, 255, 88, 0.75) 0px 0px 11.0125px) drop-shadow(rgba(0, 255, 64, 0.44) 0px 0px 33.0376px);
+}
+
+.btn-register{
+    color: white;
+    background-color: rgba(0, 255, 88, 0.75);
+    font-weight: bold;
+    filter: drop-shadow(rgba(0, 255, 64, 0.95) 0px 0px 2.20251px) drop-shadow(rgba(0, 255, 88, 0.75) 0px 0px 11.0125px) drop-shadow(rgba(0, 255, 64, 0.44) 0px 0px 33.0376px);
+    font-size:1.5rem;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.btn-register:hover{
+    color: black;
+}
+
+.input{
+    font-size: 1.2rem;
+    background-color: #070c5a;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    color: white;
+}
+a{
+    text-decoration: none;
+}
+
+.a:hover{
+    color: #00f754 !important;
+}

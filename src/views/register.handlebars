@@ -1,0 +1,32 @@
+<div class="d-flex justify-content-center bg">
+    <div class="d-flex align-items-center">
+
+        <form onsubmit="setUser(event)" class="d-flex flex-column align-items-center  p-5 border-form">
+
+            <label class="mb-1 labelRegister" for="nombre">Nombre</label>
+            <input id="register_name" class="input" type="text" name="nombre" placeholder="Nombre">
+
+            <label class="mb-1 mt-5 labelRegister " for="apellido">Apellido</label>
+            <input id="register_last_name" class="input" type="text" name="apellido" placeholder="Apellido">
+
+            <label class="mb-1 mt-5 labelRegister" for="email">E-mail</label>
+            <input id="register_email" class="input" type="email" name="email" placeholder="E-mail">
+
+            <label class="mb-1 mt-5 labelRegister" for="edad">Edad</label>
+            <input id="register_age" class="input" type="text" name="edad" placeholder="Edad">
+
+            <label class="mb-1 mt-5 labelRegister" for="contraseña">Contraseña</label>
+            <input id="register_password" class="input" type="password" name="contraseña" placeholder="Contraseña">
+
+            <input class="mb-1 mt-5 btn-register" type="submit" value="Registrar Usuario"/>
+
+            <p class="mt-4 text-secondary-emphasis">¿Ya tenés una cuenta? <a href="http://localhost:8080/login" class="text-light a">Iniciá sesión acá </a></p>
+        </form>
+
+    </div>
+
+
+
+</div>
+
+<script src="../public/js/register.js"></script>
