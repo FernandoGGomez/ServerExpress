@@ -14,25 +14,27 @@ import  mongoose  from 'mongoose';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import { config } from '../utils/configure.js';
 
 
 const {__dirname} = fileDirName(import.meta)
+const {mongo_url,cookie_secret,secret_session} = config
 
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static(__dirname+ "/"))
 
-app.use(cookieParser("contraseña"))
+app.use(cookieParser(cookie_secret))
 app.use(session({
     store:MongoStore.create({
-        mongoUrl:"mongodb://0.0.0.0/ecommerce",
+        mongoUrl:mongo_url,
         mongoOptions:{
             useNewUrlParser: true,
             useUnifiedTopology:true
         },
     }),
-    secret: "contraseña",
+    secret:secret_session,
     resave: true,
     saveUninitialized:true
 }))
@@ -60,4 +62,4 @@ const http = app.listen(port,()=> {
 
 configureSocket(http);
 
-mongoose.connect("mongodb://0.0.0.0/ecommerce",{useNewUrlParser: true,useUnifiedTopology:true});
+mongoose.connect(mongo_url,{useNewUrlParser: true,useUnifiedTopology:true});
