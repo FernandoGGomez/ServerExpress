@@ -9,7 +9,8 @@ async function setUser(event){
     const registerAge = document.querySelector("#register_age")
     const registerPassword = document.querySelector("#register_password")   
 
-    const response = await fetch('/api/users/setUser', {
+    if(registerName.value != "" && registerLastName.value != "" && registerEmail.value != "" && registerAge.value != "" && registerPassword.value != ""){
+      const response = await fetch('/api/users/setUser', {
         method: 'POST',
         body: JSON.stringify({
             name:registerName.value,
@@ -26,11 +27,18 @@ async function setUser(event){
       if(response.ok){
         alert("Usuario creado correctamente")
       }else{
-        alert("Error al crear el usuario")
+      return alert("Error al crear el usuario")
     }
-console.log("RESPONSE: ",response)
+      console.log("RESPONSE: ",response)
     
-     window.location.replace(response.url)
-   
+      window.location.replace(response.url)
+    }else{
+
+      return alert("Todos los campos son requeridos ")
+
+    }
+    
+      
+    
 
 }

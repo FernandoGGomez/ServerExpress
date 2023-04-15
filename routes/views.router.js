@@ -174,4 +174,11 @@ route.get("/perfil",async(req,res)=>{
     })
 
 })
+
+route.get('/restorepassword',(req,res)=>{
+
+    res.render("restorePassword")
+
+})
+
 export default route;
