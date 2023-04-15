@@ -1,6 +1,7 @@
 import  express  from 'express';
 import { Router } from 'express';
 import {usersModel} from "../src/dao/models/user.model.js"
+import { createHash, isValidPassword } from '../utils/crypto.js';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}));
@@ -14,9 +15,9 @@ route.post("/login",async (req,res)=>{
        return res.redirect("../../products");
     }
     
-    const user = await usersModel.findOne({email,password});
+    const user = await usersModel.findOne({email});
 
-    if(!user){
+    if(!user || !isValidPassword(password,user.password)){
         return res.status(401).send({error: "email o contraseña incorrectos"})
     }
 
@@ -35,5 +36,27 @@ route.post("/logout",(req,res)=>{
         }
     })
 
+})
+route.post("/restorepassword",async (req,res)=>{
+    const {email,newPassword} = req.body
+
+    try{
+        const user = await usersModel.findOne({email})
+
+        if(!user){
+            return res.status(404).send({error:"No existe un usuario con ese email en la base de datos"})
+        }
+    }catch(error){
+        console.log(error)
+        return res.status(500).send({error:"Internal server error"})
+    }
+       
+
+    const hashedPassword = createHash(newPassword)
+
+    await usersModel.updateOne({email},{$set :{password:hashedPassword}})
+
+    req.session.user = email
+    res.status(200).redirect("../../perfil")
 })
 export default route
