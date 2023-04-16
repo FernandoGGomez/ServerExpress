@@ -3,7 +3,6 @@ import productManager from "../src/managers/product.manager.js"
 import chatManager from "../src/managers/chat.manager.js"
 import { productsModel } from '../src/dao/models/products.model.js';
 import { cartsModel } from "../src/dao/models/cart.model.js";
-import { stat } from 'fs';
 import { usersModel } from '../src/dao/models/user.model.js';
 
 
@@ -156,8 +155,7 @@ route.get('/login',(req,res)=>{
 route.get("/perfil",async(req,res)=>{
 
     const email = req.session.user
-
-    console.log("EMAIL: ",email)
+    
     if(!email){
         return res.render("perfil",{
             status:false,
