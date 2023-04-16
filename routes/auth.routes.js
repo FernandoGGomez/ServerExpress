@@ -2,28 +2,24 @@ import  express  from 'express';
 import { Router } from 'express';
 import {usersModel} from "../src/dao/models/user.model.js"
 import { createHash, isValidPassword } from '../utils/crypto.js';
+import passport from 'passport';
 
 const route = Router();
 route.use(express.urlencoded({extended: true}));
 
-route.post("/login",async (req,res)=>{
-    
-    const {email,password} = req.body;
-    
-    if(email === "adminCoder@coder.com" && password === "adminCod3r123"){
-        req.session.user = email;
-       return res.redirect("../../products");
-    }
-    
-    const user = await usersModel.findOne({email});
+route.get("/failureregister",(req,res)=>{
+    res.status(500).send({error:"Error en el registro"});
+})
 
-    if(!user || !isValidPassword(password,user.password)){
-        return res.status(401).send({error: "email o contraseña incorrectos"})
-    }
-
-    req.session.user = email;
+route.post("/login",passport.authenticate("login",{failureRedirect:"/api/auth/failurelogin"}), async (req,res)=>{
+    
+    req.session.user = req.user.email;
     res.redirect("../../products");
 
+})
+
+route.get("/failurelogin",(req,res)=>{
+    res.status(401).send({error:"Usuario o contraseña incorrectos"});
 })
 
 route.post("/logout",(req,res)=>{

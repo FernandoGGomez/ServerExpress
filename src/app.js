@@ -1,11 +1,11 @@
 //* DESAFIO ENTREGABLE WEBSOCKET + HANDLEBARS
 
 import  express  from 'express';
-import productRoute from '../routes/products.routes.js'
-import cartRoute from '../routes/carts.routes.js'
-import viewsRoute from '../routes/views.router.js'
-import userRoute from '../routes/users.routes.js'
-import authRoute from '../routes/auth.routes.js'
+import productRoute from '../routes/products.routes.js';
+import cartRoute from '../routes/carts.routes.js';
+import viewsRoute from '../routes/views.router.js';
+import userRoute from '../routes/users.routes.js';
+import authRoute from '../routes/auth.routes.js';
 // import viewChat from '../routes/chat.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
@@ -15,6 +15,8 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { config } from '../utils/configure.js';
+import { configurePassport } from './config/passport.config.js';
+import passport from 'passport';
 
 
 const {__dirname} = fileDirName(import.meta)
@@ -38,6 +40,10 @@ app.use(session({
     resave: true,
     saveUninitialized:true
 }))
+
+configurePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 app.engine('handlebars',handlebars.engine())
