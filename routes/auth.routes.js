@@ -22,6 +22,16 @@ route.get("/failurelogin",(req,res)=>{
     res.status(401).send({error:"Usuario o contraseña incorrectos"});
 })
 
+route.get("/github",passport.authenticate("github", {scope:["user:email"]}),(req,res)=>{
+
+})
+
+route.get("/github-callback",passport.authenticate("github" ,{failureRedirect:"/login"}),(req,res)=>{
+    req.session.user = req.user.email
+    console.log("req.user:",req.user.email)
+    res.redirect("../../products")
+})
+
 route.post("/logout",(req,res)=>{
 
     req.session.destroy((err)=>{
