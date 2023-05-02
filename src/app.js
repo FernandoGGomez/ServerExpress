@@ -6,7 +6,6 @@ import cartRoute from '../routes/carts.routes.js';
 import viewsRoute from '../routes/views.router.js';
 import authRoute from '../routes/auth.routes.js';
 import sessionsRoute from '../routes/sessions.routes.js'
-// import viewChat from '../routes/chat.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
 import configureSocket from '../socket/configure-socket.js';
@@ -58,7 +57,6 @@ app.use("/api/sessions",sessionsRoute)
 
 
 app.use('/',viewsRoute)
-// app.use('/chat',viewChat)
 
 const port = 8080
 
