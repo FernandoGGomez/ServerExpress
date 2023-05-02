@@ -1,13 +1,18 @@
 import passport from "passport";
 import local from "passport-local";
 import github from "passport-github2";
+import jwt from "passport-jwt";
+import  Jwt  from "jsonwebtoken";
 import { config } from "../../utils/configure.js";
 import { createHash, isValidPassword } from "../../utils/crypto.js";
 import { usersModel } from "../dao/models/user.model.js";
 
 const localStrategy = local.Strategy;
 const githubStrategy = github.Strategy;
-const {github_client_Id,github_client_secret,github_callback_url} = config;
+const JWTStrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
+
+const {github_client_Id,github_client_secret,github_callback_url,cookie_secret} = config;
 
 export function configurePassport(){
 
@@ -46,7 +51,7 @@ export function configurePassport(){
     },async(username,password,done)=>{
         try{
             const user = await usersModel.findOne({email:username});
-            
+            console.log("USER:",user)
             if(!user){
                return done(null,false);
             }
@@ -95,6 +100,24 @@ export function configurePassport(){
         
     }))
 
+
+    passport.use("current",new JWTStrategy({
+        jwtFromRequest:ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey:cookie_secret,
+        },async (jwt_payload,done)=>{
+                try{    
+                    
+                    const user = await  usersModel.findOne({email:jwt_payload.user.email})
+                    console.log("userJWTStrategy:",user)
+                    return done(null,user)
+                }catch(error){
+                    console.log("Error:",error)
+                    return done(error)
+                }
+}))
+
+
+
     passport.serializeUser((user,done)=> done(null,user._id));
 
     passport.deserializeUser(async (id,done)=>{
@@ -102,4 +125,17 @@ export function configurePassport(){
         done(null,user);
     });
 
+}
+
+
+function cookieExtractor(req){
+
+    return req?.cookies?.["AUTH"];
+
+}
+
+export function generateToken(user){
+    console.log("user GenerateToken",user)
+    const token = Jwt.sign({user},cookie_secret,{expiresIn:"24h"});
+    return token
 }
