@@ -4,6 +4,7 @@ import chatManager from "../src/managers/chat.manager.js"
 import { productsModel } from '../src/dao/models/products.model.js';
 import { cartsModel } from "../src/dao/models/cart.model.js";
 import { usersModel } from '../src/dao/models/user.model.js';
+import passport from 'passport';
 
 
 
@@ -13,20 +14,20 @@ const route = Router();
 
 route.get('/',async (req,res) => {
 
-    
-    
     res.redirect('/login')
 
 })
 
-route.get('/products',async(req,res)=>{
-    const email = req.session.user
+route.get('/products',passport.authenticate("current",{session:false, failureRedirect:"/api/auth/failurelogin"}),async(req,res)=>{
+    const email = req.user.email
     const query = req.query;
     const limit =  !isNaN(query.limit) ?  query.limit : 10;
     const page = query.page ? query.page : 1;
     const sort = query.sort ==="asc" ? 1: query.sort ==="desc"?-1 : "";
     const category = query.category
     const status = query.status == "true" ? query.status : query.status == "false" ? query.status : 1;
+
+    console.log("EMAIL:",email)
 
     let errorPage;
     let errorPage2;
@@ -152,9 +153,9 @@ route.get('/login',(req,res)=>{
 
 })
 
-route.get("/perfil",async(req,res)=>{
+route.get("/perfil",passport.authenticate("current"),async(req,res)=>{
 
-    const email = req.session.user
+    const email = req.user.email
     
     if(!email){
         return res.render("perfil",{

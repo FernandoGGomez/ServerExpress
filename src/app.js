@@ -4,8 +4,8 @@ import  express  from 'express';
 import productRoute from '../routes/products.routes.js';
 import cartRoute from '../routes/carts.routes.js';
 import viewsRoute from '../routes/views.router.js';
-import userRoute from '../routes/users.routes.js';
 import authRoute from '../routes/auth.routes.js';
+import sessionsRoute from '../routes/sessions.routes.js'
 // import viewChat from '../routes/chat.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
@@ -53,8 +53,8 @@ app.set('view engine','handlebars')
 
 app.use('/api/products',productRoute)
 app.use('/api/carts',cartRoute)
-app.use('/api/users',userRoute)
 app.use('/api/auth',authRoute)
+app.use("/api/sessions",sessionsRoute)
 
 
 app.use('/',viewsRoute)

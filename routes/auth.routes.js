@@ -1,5 +1,6 @@
 import  express  from 'express';
 import { Router } from 'express';
+import { generateToken } from '../src/config/passport.config.js';
 import {usersModel} from "../src/dao/models/user.model.js"
 import { createHash, isValidPassword } from '../utils/crypto.js';
 import passport from 'passport';
@@ -7,15 +8,30 @@ import passport from 'passport';
 const route = Router();
 route.use(express.urlencoded({extended: true}));
 
+route.post("/register",passport.authenticate("register",{session:false,failureRedirect:"/api/auth/failureregister"}), async (req,res)=>{
+
+    console.log("req.body:",req.body)
+    req.session.user = req.body.email
+    
+    res.status(201).redirect("../../products");
+
+
+})
+
 route.get("/failureregister",(req,res)=>{
     res.status(500).send({error:"Error en el registro"});
 })
 
-route.post("/login",passport.authenticate("login",{failureRedirect:"/api/auth/failurelogin"}), async (req,res)=>{
-    
-    req.session.user = req.user.email;
-    res.redirect("../../products");
-
+route.post("/login",passport.authenticate("login"), async (req,res)=>{
+    const user = req.user
+    console.log("user en login:",user)
+    const token = generateToken({_id:user._id,email:user.email})
+    res.cookie("AUTH",token,{
+        maxAge: 60*60*1000*24,
+        httpOnly: true
+    })
+    console.log("req.user:",user)
+    res.redirect("../../products",);
 })
 
 route.get("/failurelogin",(req,res)=>{
@@ -34,13 +50,9 @@ route.get("/github-callback",passport.authenticate("github" ,{failureRedirect:"/
 
 route.post("/logout",(req,res)=>{
 
-    req.session.destroy((err)=>{
-        if(err){
-            res.status(500).send({error: err})
-        }else{
-            res.redirect("/login")
-        }
-    })
+        res.clearCookie("AUTH")
+        res.redirect("/login")
+        
 
 })
 route.post("/restorepassword",async (req,res)=>{

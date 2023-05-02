@@ -10,7 +10,7 @@ async function setUser(event){
     const registerPassword = document.querySelector("#register_password")   
 
     if(registerName.value != "" && registerLastName.value != "" && registerEmail.value != "" && registerAge.value != "" && registerPassword.value != ""){
-      const response = await fetch('/api/users/setUser', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify({
             name:registerName.value,
