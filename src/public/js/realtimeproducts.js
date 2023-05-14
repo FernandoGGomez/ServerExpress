@@ -9,10 +9,11 @@ const socket = io()
     const codigo = document.getElementById('codigo_producto').value;
     let status = document.getElementById('status_producto').value;
     const stock = document.getElementById('stock_producto').value;
+    const category =  document.getElementById('categoria_producto').value;
   
     status === "false"? status = false : status
     
-    const newProduct = {title:nombre,description:descripcion,price:precio,thumbnail:thumbnail,code:codigo,status:status,stock:stock}
+    const newProduct = {title:nombre,description:descripcion,price:precio,thumbnail:thumbnail,code:codigo,status:status,stock:stock,category:category}
     socket.emit("add_product",newProduct)
 
   }

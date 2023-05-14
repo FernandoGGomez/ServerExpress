@@ -12,6 +12,7 @@ class ProductManager{
     async addProduct(product,img){
         const {title,description,price,code,status,stock,category} = product;
         const products = await this.getProducts();
+        console.log(stock)
         const codeExist = products.some(prod => prod.code === code ) //Valido que el código no exista
         
         if(title && description && price && code && stock && category){ // Valido que todos los campos estén completados
@@ -19,7 +20,7 @@ class ProductManager{
             if (codeExist){
 
                 console.log(`Product code: ${code} has already been added`)
-                return `Product code: ${code} has already been added`;
+                return false
 
             }else{   //si el codigo de producto no existia lo pusheo en un array de productos  
                 const newProduct =  {

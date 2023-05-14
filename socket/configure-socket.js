@@ -10,29 +10,16 @@ export default function configureSocket(httpServer){
         console.log("socket conectado")
         socket.on("add_product",async (product)=>{
            
+           try{
+                 const productoAgregado = await productManager.addProduct(product)
+                 socket.emit("producto_agregado",productoAgregado)
+                 socket.broadcast.emit("producto_agregado",productoAgregado)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
+           }catch(error){
+            socket.emit("producto_agregado",false)
+            socket.broadcast.emit("producto_agregado",false)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
+           }
+            
            
-            const productoAgregado = await productManager.addProduct(product)
-          
-           
-            if(productoAgregado){
-                
-                const allProducts = await productManager.getProducts()
-              
-                const productId = allProducts.find(prod => prod.title === productoAgregado.title)
-           
-                const nuevoProducto = await productManager.getProductById(productId._id)
-
-                if(nuevoProducto){
-                    console.log("nuevoProducto: ",nuevoProducto)
-                }
-                
-    
-                socket.emit("producto_agregado",nuevoProducto)
-                socket.broadcast.emit("producto_agregado",nuevoProducto)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
-            }else{
-                socket.emit("producto_agregado",false)
-                socket.broadcast.emit("producto_agregado",false)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
-            }
             
             
             

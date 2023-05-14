@@ -19,7 +19,7 @@ import passport from 'passport';
 
 
 const {__dirname} = fileDirName(import.meta)
-const {mongo_url,cookie_secret,secret_session} = config
+const {port,mongo_url,cookie_secret,secret_session} = config
 
 const app = express();
 app.use(express.json())
@@ -57,8 +57,6 @@ app.use("/api/sessions",sessionsRoute)
 
 
 app.use('/',viewsRoute)
-
-const port = 8080
 
 const http = app.listen(port,()=> {
     console.log(`Servidor Express escuchando en el puerto ${port}`)

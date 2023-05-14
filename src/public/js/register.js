@@ -25,13 +25,14 @@ async function setUser(event){
       });
 
       if(response.ok){
+        
         alert("Usuario creado correctamente")
       }else{
       return alert("Error al crear el usuario")
     }
       console.log("RESPONSE: ",response)
     
-      window.location.replace(response.url)
+      window.location.replace("http://localhost:8080/products")
     }else{
 
       return alert("Todos los campos son requeridos ")
