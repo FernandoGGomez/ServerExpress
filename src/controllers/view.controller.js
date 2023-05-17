@@ -24,9 +24,9 @@ class viewController{
         const cart = await this.#CartService.findById(cid);
         console.log("cariiiito:",cart)
      
-          res.render("cart",{cart:JSON.parse(JSON.stringify(cart.cart))})
+          res.status(200).render("cart",{cart:JSON.parse(JSON.stringify(cart.cart))})
     }catch(error){
-        return res.render("cart",{cartError:true,cid:cid})
+        return res.status(200).render("cart",{cartError:true,cid:cid})
     }
 
     }
@@ -42,7 +42,7 @@ class viewController{
                 })
             }
             const user = await this.#UserService.findOne({email})
-            res.render("perfil",{
+            res.status(200).render("perfil",{
                 status:true,
                 name: user.name,
                 last_name: user.last_name,
@@ -56,8 +56,8 @@ class viewController{
 
 
     async viewProducts(req,res,next){
-        
-    const email = req.user.email
+
+    const email = req.cookies.AUTH ? req.user?.email || false : false;
     const query = req.query;
     const limit =  !isNaN(query.limit) ?  query.limit : 10;
     const page = query.page ? query.page : 1;
@@ -88,7 +88,7 @@ class viewController{
 
        }
        if(!email){
-       return res.render("products",{
+       return res.status(200).render("products",{
             products:products.docs,
             pages: products.totalPages,
             page: products.page,
@@ -107,7 +107,7 @@ class viewController{
         console.log("USER: ",user)
        if(user){ 
         
-        res.render("products",{
+        res.status(200).render("products",{
             name: user.name,
             rol: user.rol,
             email:user.email,
@@ -125,7 +125,7 @@ class viewController{
             errorStatus:  errorStatus
         });
     }else{
-        res.render("products",{
+        res.status(200).render("products",{
             rol: "admin",
             email:email,
             products:products.docs,
@@ -159,7 +159,7 @@ class viewController{
 
     
     console.log("PeoductoFiltrado",productoFiltrado) 
-    res.render("product",{product:JSON.parse(JSON.stringify(productoFiltrado))})
+    res.status(200).render("product",{product:JSON.parse(JSON.stringify(productoFiltrado))})
   
     }
 
@@ -167,7 +167,7 @@ class viewController{
         
         try{
             const products =  await productManager.getProducts();
-            res.render("realTimeProducts",{products:products})
+            res.status(200).render("realTimeProducts",{products:products})
         }catch(error){
             next(error)
         }
@@ -179,7 +179,7 @@ class viewController{
 
         try{
             const chat =  await chatManager.getAll();
-            res.render("chat",{chat:chat})
+            res.status(200).render("chat",{chat:chat})
         }catch(error){
             next(error)
         }
@@ -188,21 +188,28 @@ class viewController{
 
     async viewRegister(req,res){
 
-        res.render("register")
+        res.status(200).render("register")
     
     }
 
     async viewLogin(req,res){
-
-        res.render("login")
+        
+        res.status(200).render("login")
     
     }
 
     async viewRestorePassword(req,res){
 
-        res.render("restorePassword")
+        res.status(200).render("restorePassword")
     
     }
+
+    async viewUnauthorized(req,res){
+
+        res.status(401).render("unauthorized")
+    
+    }
+
 }
 
 const controller = new viewController(new CartService(), new UserService(), new ProductService());

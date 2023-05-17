@@ -7,15 +7,9 @@ const route = Router();
 route.use(express.urlencoded({extended: true}));
 
 
-route.get("/current",passport.authenticate("current",{failureRedirect:"/api/sessions/unauthorized"}),(req,res)=>{
+route.get("/current",passport.authenticate("current",{failureRedirect:"/unauthorized"}),(req,res)=>{
 
     res.send({usuario:req.user})
-
-})
-
-route.get("/unauthorized",(req,res)=>{
-
-    res.render("unauthorized")
 
 })
 

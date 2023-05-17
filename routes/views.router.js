@@ -25,4 +25,6 @@ route.get("/perfil",passport.authenticate("current"),controller.viewPerfil.bind(
 
 route.get('/restorepassword',controller.viewRestorePassword)
 
+route.get("/unauthorized",controller.viewUnauthorized)
+
 export default route;

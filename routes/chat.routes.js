@@ -6,7 +6,7 @@ route.use(express.urlencoded({extended: true}))
 
 route.get("/",async(req,res)=>{
 
-res.send("HOLA")
+res.status(200).send({ok:true})
 
 })
 

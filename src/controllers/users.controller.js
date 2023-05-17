@@ -49,8 +49,11 @@ class UserController{
     }
 
     async logout(req,res){
+        console.log("req.user:",req.user)
 
         res.clearCookie("AUTH")
+        req.user = false
+        console.log("req.userfalse:",req.user)
         res.redirect("/login")
     }
 
