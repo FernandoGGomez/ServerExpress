@@ -1,13 +1,17 @@
+import { randomUUID } from "crypto";
 import CartService from "../services/cart.service.js";
 import ProductService from "../services/product.service.js";
+import TicketService from "../services/ticket.service.js";
 
 class CartController{
 
     #cartService;
     #productService;
-    constructor(cartService,productService){
+    #ticketService
+    constructor(cartService,productService,ticketService){
         this.#cartService = cartService;
         this.#productService = productService;
+        this.#ticketService = ticketService;
     }
 
     async create(req,res,next){
@@ -186,8 +190,91 @@ class CartController{
         return res.status(400).send({Error: `Debe proporcionar el Id del producto a actualizar `})
     }
 
+
+    async purchase(req,res,next){
+
+        const {cid} = req.params
+        try{
+            const cart = await this.#cartService.findById(cid)
+
+            if (!cart){
+                return  res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
+            }
+            
+            let pids = [];
+            let amount = [];
+            for (let i = 0 ; i < cart.cart.length ; i++){
+
+                const quantity = JSON.parse(JSON.stringify(cart.cart[i].quantity))
+                const stock = JSON.parse(JSON.stringify(cart.cart[i].product.stock))
+                const pid =  JSON.parse(JSON.stringify(cart.cart[i].product._id))
+                const product = await this.#productService.findById(pid)
+
+                if(stock >= quantity){
+                   product.stock -= quantity
+                   amount.push(quantity)
+                   await this.#productService.update({_id:pid},product)
+                   await this.#cartService.deleteProduct(cid,pid)
+
+                }else{
+                    pids.push({product:JSON.parse(JSON.stringify(cart.cart[i].product._id)),quantity:quantity}) 
+                }
+            }   
+
+            if(pids.length != 0){
+
+                for (let i = 0 ; i < pids.length ; i++){
+                        const data = [{product:pids[i].product,quantity:pids[i].quantity}]
+                        await this.#cartService.update(cid,data)
+                };
+
+            }else{
+                  await this.#cartService.emptyCart(cid)
+            }
+           
+            
+            
+            const updatedCart = await this.#cartService.findById(cid)
+            const ticket = {
+                code:randomUUID(),
+            
+                purchase_datetime:new Date(),
+            
+                amount: amount.reduce((a,b)=> a+b,0),
+            
+                purchaser:req.user?.email || "hola" 
+            }
+            
+           
+            if(ticket.amount > 0){
+
+                     this.#ticketService.create(ticket)
+
+                     if(amount.length != 0){
+                       return res.status(200).send({error:"No hay stock suficiente de los siguientes productos",products:JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))})
+                     }
+                    return res.status(200).send(ticket)
+                }
+           
+           
+            res.status(200).send({error:"No hay stock suficiente de los siguientes productos",products:JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))})
+                
+                
+           
+           
+           
+          
+
+        }catch(error){
+            console.log(error)
+            res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
+        }
+       
+
+    }
+
 }
 
-const controller = new CartController(new CartService(),new ProductService());
+const controller = new CartController(new CartService(),new ProductService(),new TicketService());
 
 export default controller;

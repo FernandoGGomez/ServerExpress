@@ -14,6 +14,8 @@ export const config = {
 
     github_client_secret: process.env.GITHUB_CLIENT_SECRET,
 
-    github_callback_url:process.env.GITHUB_CALLBACK_URL
+    github_callback_url:process.env.GITHUB_CALLBACK_URL,
+
+    persistence: process.env.PERSISTENCE
 
 } 

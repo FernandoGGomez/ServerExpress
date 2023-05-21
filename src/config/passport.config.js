@@ -50,7 +50,20 @@ export function configurePassport(){
         usernameField:"email"
     },async(username,password,done)=>{
 
-     
+        console.log("USERNAME:",username)
+
+        if(username == "adminCoder@coder.com" & password == "adminCod3r123"){
+            const user = {
+                _id:"1",
+                email: "adminCoder@coder.com",
+                name: "Admin",
+                last_name: "CoderHouse",
+                age: "-",
+                password: "adminCod3r123",
+                rol: "Admin"
+            }
+            return done(null,user)
+        }
             try{
                 const user = await usersModel.findOne({email:username});
                 if(!user){
@@ -121,9 +134,24 @@ export function configurePassport(){
 
 
 
-    passport.serializeUser((user,done)=> done(null,user._id));
+    passport.serializeUser((user,done)=>{ 
+        console.log(user)
+        done(null,user._id)
+    });
 
     passport.deserializeUser(async (id,done)=>{
+        if(id == "1"){
+            const user = {
+                _id:"1",
+                email: "adminCoder@coder.com",
+                name: "Admin",
+                last_name: "CoderHouse",
+                age: "-",
+                password: "adminCod3r123",
+                rol: "Admin"
+            }
+            return done(null,user)
+        }
         const user= await usersModel.findOne({_id:id});
         done(null,user);
     });

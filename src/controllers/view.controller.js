@@ -193,7 +193,7 @@ class viewController{
     }
 
     async viewLogin(req,res){
-        
+
         res.status(200).render("login")
     
     }

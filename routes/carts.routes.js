@@ -20,5 +20,7 @@ route.delete("/:cid/products/:pid",controller.deleteProduct.bind(controller))
 
 route.delete("/:cid",controller.delete.bind(controller))
 
+route.post("/:cid/purchase",controller.purchase.bind(controller))
+
 
 export default route;
