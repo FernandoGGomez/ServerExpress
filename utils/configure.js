@@ -16,6 +16,14 @@ export const config = {
 
     github_callback_url:process.env.GITHUB_CALLBACK_URL,
 
-    persistence: process.env.PERSISTENCE
+    persistence: process.env.PERSISTENCE,
+
+    mail_pass: process.env.MAIL_PASS, 
+
+    mail_user:process.env.MAIL_USER, 
+
+    mail_host:process.env.MAIL_HOST ,
+
+    mail_company: process.env.MAIL_COMPANY
 
 } 
