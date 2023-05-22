@@ -1,14 +1,12 @@
-//* DESAFIO ENTREGABLE WEBSOCKET + HANDLEBARS
-
 import  express  from 'express';
-import productRoute from '../routes/products.routes.js';
-import cartRoute from '../routes/carts.routes.js';
-import viewsRoute from '../routes/views.router.js';
-import authRoute from '../routes/auth.routes.js';
-import sessionsRoute from '../routes/sessions.routes.js'
+import productRoute from './routes/products.routes.js';
+import cartRoute from './routes/carts.routes.js';
+import viewsRoute from './routes/views.router.js';
+import authRoute from './routes/auth.routes.js';
+import sessionsRoute from './routes/sessions.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
-import configureSocket from '../socket/configure-socket.js';
+import configureSocket from './socket/configure-socket.js';
 import  mongoose  from 'mongoose';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
