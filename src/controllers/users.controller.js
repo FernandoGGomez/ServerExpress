@@ -1,4 +1,4 @@
-import UserService from "../services/user.service.js";
+import UserService from "../dao/services/user.service.js";
 import { generateToken } from '../config/passport.config.js';
 import { createHash } from '../../utils/crypto.js';
 class UserController{
@@ -29,7 +29,8 @@ class UserController{
     async login(req,res){
         const user = req.user
         console.log("user en login:",user)
-        const token = generateToken({_id:user._id,email:user.email})
+        const token =  generateToken({_id:user._id,email:user.email})
+        console.log(token)
         res.cookie("AUTH",token,{
             maxAge: 60*60*1000*24,
             httpOnly: true
@@ -54,30 +55,36 @@ class UserController{
         res.clearCookie("AUTH")
         req.user = false
         console.log("req.userfalse:",req.user)
-        res.redirect("/login")
+        res.status(200).redirect("/login")
     }
 
     async restorePassword(req,res){
         const {email,newPassword} = req.body
     
         try{
-            const user = await this.#service.findOne({email})
+            await this.#service.findOne(email)
     
-            if(!user){
-                
-            }
+            const hashedPassword = createHash(newPassword)
+    
+           try{
+            await this.#service.updateOne(email,hashedPassword)
+        
+            req.session.user = email
+            
+            res.status(200).redirect("/login")
+           }catch(error){
+            console.log(error)
+            return res.status(500).send({error:"Internal server error"})
+           }
+           
+
+
         }catch(error){
             console.log(error)
             return res.status(404).send({error:"No existe un usuario con ese email en la base de datos"})
         }
            
-    
-        const hashedPassword = createHash(newPassword)
-    
-        await this.#service.updateOne(email,hashedPassword)
-    
-        req.session.user = email
-        res.status(200).redirect("../../perfil")
+
     }
 
 }

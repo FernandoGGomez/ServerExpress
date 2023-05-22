@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
-import CartService from "../services/cart.service.js";
-import ProductService from "../services/product.service.js";
-import TicketService from "../services/ticket.service.js";
+import CartService from "../dao/services/cart.service.js";
+import ProductService from "../dao/services/product.service.js";
+import TicketService from "../dao/services/ticket.service.js";
 
 class CartController{
 

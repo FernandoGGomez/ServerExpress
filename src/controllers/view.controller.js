@@ -1,8 +1,7 @@
-import CartService from "../services/cart.service.js";
-import productManager from "../managers/product.manager.js"
-import UserService from "../services/user.service.js"
+import CartService from "../dao/services/cart.service.js";
+import UserService from "../dao/services/user.service.js"
 import chatManager from "../managers/chat.manager.js"
-import ProductService from "../services/product.service.js";
+import ProductService from "../dao/services/product.service.js";
 
 class viewController{
     #CartService
@@ -22,9 +21,8 @@ class viewController{
     try{
 
         const cart = await this.#CartService.findById(cid);
-        console.log("cariiiito:",cart)
-     
-          res.status(200).render("cart",{cart:JSON.parse(JSON.stringify(cart.cart))})
+
+        res.status(200).render("cart",{cart:JSON.parse(JSON.stringify(cart.cart))})
     }catch(error){
         return res.status(200).render("cart",{cartError:true,cid:cid})
     }
@@ -41,7 +39,7 @@ class viewController{
                     status:false,
                 })
             }
-            const user = await this.#UserService.findOne({email})
+            const user = await this.#UserService.findOne(email)
             res.status(200).render("perfil",{
                 status:true,
                 name: user.name,
@@ -50,7 +48,7 @@ class viewController{
                 email: user.email
             })
         }catch(error){
-            next(error)
+            res.status(403).render("unauthorized")
         }
     }
 
@@ -103,14 +101,11 @@ class viewController{
             errorStatus:  errorStatus
         });
     }else{
-        const user = await this.#UserService.findOne({email})
-        console.log("USER: ",user)
-       if(user){ 
-        
+           
         res.status(200).render("products",{
-            name: user.name,
-            rol: user.rol,
-            email:user.email,
+            name: req.user.name,
+            rol: req.user.rol,
+            email:req.user.email,
             products:products.docs,
             pages: products.totalPages,
             page: products.page,
@@ -124,24 +119,6 @@ class viewController{
             errorPage2: errorPage2,
             errorStatus:  errorStatus
         });
-    }else{
-        res.status(200).render("products",{
-            rol: "admin",
-            email:email,
-            products:products.docs,
-            pages: products.totalPages,
-            page: products.page,
-            prev: products.prevPage,
-            next: products.nextPage,
-            hasPrevPage: products.hasPrevPage,
-            hasNextPage: products.hasNextPage,
-            prevLink: products.hasPrevPage?"linkPrev" :null,
-            nextLink:products.hasNextPage?"linkNext" :null ,
-            errorPage: errorPage,
-            errorPage2: errorPage2,
-            errorStatus:  errorStatus
-        });
-    }
     }
     }
 
@@ -166,8 +143,8 @@ class viewController{
     async viewRealTimeProducts(req,res,next){
         
         try{
-            const products =  await productManager.getProducts();
-            res.status(200).render("realTimeProducts",{products:products})
+            const products =  await this.#ProductService.findAllProducts();
+            res.status(200).render("realTimeProducts",{products:JSON.parse(JSON.stringify(products))})
         }catch(error){
             next(error)
         }
@@ -206,7 +183,7 @@ class viewController{
 
     async viewUnauthorized(req,res){
 
-        res.status(401).render("unauthorized")
+        res.status(403).render("unauthorized")
     
     }
 

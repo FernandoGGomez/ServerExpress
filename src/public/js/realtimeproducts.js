@@ -28,25 +28,15 @@ socket.on("producto_agregado",(producto)=>{
         nuevoProducto.classList.add("d-flex","flex-column","col-4","border","mx-4","my-4")
         if(producto.status){
             nuevoProducto.innerHTML=`
-            <p class="h5">${producto._id}</p>
             <p class="h3">${producto.title}</p>
+            <p class="h5"><b>Code:</b>${producto.code}</p>
             <p class="description">${producto.description}</p>
             <p class="stock text-align-left h4">Stock: ${producto.stock}</p>
             <p class="precio text-ends h3 ">$ ${producto.price}</p>
             <p class="text-ends h3" style="color: green;">Disponible</p>
         `
-        }else{
-            nuevoProducto.innerHTML=`
-            <p class="h5">${producto.id}</p>
-            <p class="h3">${producto.title}</p>
-            <p class="description">${producto.description}</p>
-            <p class="stock text-align-left h4">Stock: ${producto.stock}</p>
-            <p class="precio text-ends h3 ">$ ${producto.price}</p>
-            <p class="text-ends h3" style="color: red;">No disponible</p>
-        `
         }
       
-        
         contenedorProductos.appendChild(nuevoProducto)
         console.log("Producto: ",producto)
     }else{
