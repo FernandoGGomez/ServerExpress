@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import CartService from "../dao/services/cart.service.js";
 import ProductService from "../dao/services/product.service.js";
 import TicketService from "../dao/services/ticket.service.js";
+import { sendMail } from "../mailing/purchaseMail.js";
 
 class CartController{
 
@@ -249,10 +250,12 @@ class CartController{
             if(ticket.amount > 0){
 
                      this.#ticketService.create(ticket)
-
+                     await sendMail(req.user.email,ticket)
                      if(amount.length != 0){
                        return res.status(200).send({error:"No hay stock suficiente de los siguientes productos",products:JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))})
                      }
+
+                     
                     return res.status(200).send(ticket)
                 }
            
