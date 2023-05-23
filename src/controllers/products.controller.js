@@ -1,3 +1,4 @@
+import { Factory } from "../dao/factory.js";
 import ProductService from "../dao/services/product.service.js";
 
 class ProductController{
@@ -110,6 +111,6 @@ class ProductController{
 
 }
 
-const controller = new ProductController(new ProductService());
+const controller = new ProductController(await Factory.getDao("products"));
 
 export default controller;

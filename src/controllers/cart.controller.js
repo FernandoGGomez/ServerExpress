@@ -3,6 +3,7 @@ import CartService from "../dao/services/cart.service.js";
 import ProductService from "../dao/services/product.service.js";
 import TicketService from "../dao/services/ticket.service.js";
 import { sendMail } from "../mailing/purchaseMail.js";
+import { Factory } from "../dao/factory.js";
 
 class CartController{
 
@@ -278,6 +279,6 @@ class CartController{
 
 }
 
-const controller = new CartController(new CartService(),new ProductService(),new TicketService());
+const controller = new CartController(await Factory.getDao("cart"),await Factory.getDao("products"),await Factory.getDao("ticket"));
 
 export default controller;
