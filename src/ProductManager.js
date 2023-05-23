@@ -9,7 +9,7 @@ class ProductManager{
         this.path = path;
     }
 
-    async addProduct(product,img){
+    async create(product,img){
         const {title,description,price,code,status,stock} = product;
         const products = await this.getProducts();
         const codeExist = products.some(prod => prod.code === code ) //Valido que el código no exista
@@ -58,7 +58,7 @@ class ProductManager{
       }
 
 
-    async getProductById(id){
+    async findById(id){
 
         const products = await this.getProducts(); //recupero los datos del archivo .json
         
