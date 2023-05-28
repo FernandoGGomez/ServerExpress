@@ -4,6 +4,7 @@ import cartRoute from './routes/carts.routes.js';
 import viewsRoute from './routes/views.router.js';
 import authRoute from './routes/auth.routes.js';
 import sessionsRoute from './routes/sessions.routes.js'
+import mockingRoute from './routes/mockingProducts.routes.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
 import configureSocket from './socket/configure-socket.js';
@@ -14,6 +15,7 @@ import MongoStore from 'connect-mongo';
 import { config } from '../utils/configure.js';
 import { configurePassport } from './config/passport.config.js';
 import passport from 'passport';
+
 
 
 const {__dirname} = fileDirName(import.meta)
@@ -52,6 +54,7 @@ app.use('/api/products',productRoute)
 app.use('/api/carts',cartRoute)
 app.use('/api/auth',authRoute)
 app.use("/api/sessions",sessionsRoute)
+app.use("/api/mockingproducts",mockingRoute)
 
 
 app.use('/',viewsRoute)
