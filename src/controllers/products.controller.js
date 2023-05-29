@@ -1,5 +1,6 @@
 import { Factory } from "../dao/factory.js";
 import ProductService from "../dao/services/product.service.js";
+import CustomError from "../errors/custom.error.js";
 
 class ProductController{
 
@@ -9,18 +10,37 @@ class ProductController{
     }
 
     async create(req,res,next){
+        const {title,description,price,code,stock,category} = req.body;
+        if(title && description && price && code && stock && category){
+            try{
+                const img = req.file?.path
+                const product = req.body;
+            
+                const productoAgregado = await this.#service.create(product);
         
-        try{
-            const img = req.file?.path
-            const product = req.body;
-        
-            const productoAgregado = await this.#service.create(product);
+                res.status(200).send(productoAgregado);
     
-            res.status(200).send(productoAgregado);
+            }catch(error){
+                next(new CustomError({
+                    name:"Product already exist",
+                    cause:error,
+                    message:error,
+                    code:2
+                }))
+            }
+        }else{
+            const expectedProperties = ['title', 'description' ,'price','code','stock','category'];
+            const missingProperties = expectedProperties.filter(prop => !Object.keys(req.body).includes(prop));
+            next(new CustomError({
+                name:"Fields empty",
+                cause:"There are incomplete fields",
+                message:`Failed attempt to create product, the fields: (${missingProperties}) are required`,
+                code:2
+            }))
 
-        }catch(error){
-            next(error)
         }
+        
+       
         
         }
 
@@ -31,7 +51,12 @@ class ProductController{
         const {_id} = req.body; 
         
         if(_id){
-            return res.status(400).send({Error: `No se puede modificar el id del producto ${pid} `})
+            next(new CustomError({
+                name:"Can't modify the id of the product",
+                cause:"Can't modify the id of the product",
+                message:`Can't modify the id of the product ${pid}`,
+                code:2
+            }))
         }
         try{
             const product = await this.#service.findById(pid);
@@ -44,7 +69,12 @@ class ProductController{
             res.status(200).send(updatedProduct) 
         
         }catch(error){
-             return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+            next(new CustomError({
+                name:"Product doesn't exist",
+                cause:`The product with id ${pid} doesn´t exist`,
+                message:`Can't update the product with id (${pid}) because doesn´t exist`,
+                code:404
+            }))
         }
      
         
@@ -88,7 +118,12 @@ class ProductController{
             }
             res.status(200).send(productoFiltrado)
         }catch(error){
-            return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+            next(new CustomError({
+                name:"Product doesn't exist",
+                cause:`The product with id ${pid} doesn´t exist`,
+                message:`Can't find the product with id (${pid}) because doesn´t exist`,
+                code:404
+            })) 
         }
     
         }
@@ -100,7 +135,12 @@ class ProductController{
             await this.#service.delete(pid);
             res.status(200).send(`El producto con el id ${pid} ha sido eliminado correactamente`)
         }catch(error){
-            return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+            next(new CustomError({
+                name:"Product doesn't exist",
+                cause:`The product with id ${pid} doesn´t exist`,
+                message:`Can't delete the product with id (${pid}) because doesn´t exist`,
+                code:404
+            })) 
         }   
 
     }

@@ -4,6 +4,7 @@ import ProductService from "../dao/services/product.service.js";
 import TicketService from "../dao/services/ticket.service.js";
 import { sendMail } from "../mailing/purchaseMail.js";
 import { Factory } from "../dao/factory.js";
+import CustomError from "../errors/custom.error.js";
 
 class CartController{
 
@@ -45,12 +46,22 @@ class CartController{
                 await this.#cartService.update(cid,product);
                 res.status(200).send({message:"Carrito actualizado correctamente"});
             }catch(error){
-                res.status(400).send({error:`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`})
+                next(new CustomError({
+                    name:"Product doesn't exist in the cart",
+                    cause:`The product with id ${product[0].product} it's not in the cart`,
+                    message:`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`,
+                    code:404 
+                })) 
             }
             
 
            }catch(error){
-            return res.status(404).send({error: `The cart with id ${cid} doesn´t exist`})           
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`The cart with the id ${cid} doesn't exist`,
+                code:404
+            }))           
         }
     
         }
@@ -61,7 +72,7 @@ class CartController{
 
     } 
 
-    async updateQuantityOfProductInCart(req,res){
+    async updateQuantityOfProductInCart(req,res,next){
 
         const {cid,pid} = req.params; 
         const quantity = req.body[0].quantity;
@@ -72,14 +83,24 @@ class CartController{
             try{
                 await this.#cartService.findById(cid);
             }catch(error){
-                return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
+                next(new CustomError({
+                    name:"Cart doesn't exist",
+                    cause:`The cart with id ${cid} doesn´t exist`,
+                    message:`The cart with the id ${cid} doesn't exist`,
+                    code:404
+                }))
             }
             
     
             try{
                 await this.#productService.findById(pid);
             }catch(error){
-                return res.status(400).send({Error: `El Producto con el id ${pid} no existe`})
+                next(new CustomError({
+                    name:"Product doesn't exist",
+                    cause:`The product with id ${pid} doesn´t exist`,
+                    message:`The product with id ${pid} doesn´t exist`,
+                    code:404 
+                })) 
             }
             
     
@@ -88,7 +109,12 @@ class CartController{
     
                 res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
             }catch(error){
-                res.status(404).send({"Error":`El carrito con el id ${cid} no existe`})
+                next(new CustomError({
+                    name:"Cart doesn't exist",
+                    cause:`The cart with id ${cid} doesn´t exist`,
+                    message:`The cart with the id ${cid} doesn't exist`,
+                    code:404
+                }))
             }
         }else{
     
@@ -106,7 +132,12 @@ class CartController{
             const cart = await this.#cartService.findById(cid);
               res.status(200).send({cart:cart.cart})
         }catch(error){
-            return res.status(400).send({error:`The cart with the id ${cid} doesn't exist`})
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`The cart with the id ${cid} doesn't exist`,
+                code:404
+            }))
         }
 
         }
@@ -126,7 +157,12 @@ class CartController{
 
 
             }catch(error){
-                return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
+                next(new CustomError({
+                    name:"Product doesn't exist",
+                    cause:`The product with id ${pid} doesn´t exist`,
+                    message:`Can't update the product with id (${pid}) because doesn´t exist`,
+                    code:404 
+                })) 
             }
                 
             try{
@@ -140,8 +176,12 @@ class CartController{
            
 
         }catch(error){
-            console.log(error)
-            return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`The cart with the id ${cid} doesn't exist`,
+                code:404
+            }))
         }
         
     }
@@ -158,7 +198,12 @@ class CartController{
             try{
                 await this.#productService.findById(pid);
                }catch{
-                return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
+                next(new CustomError({
+                    name:"Product doesn't exist",
+                    cause:`The product with id ${pid} doesn´t exist`,
+                    message:`Can't delete the product with id (${pid}) because doesn´t exist`,
+                    code:404 
+                }))  
                }
                
                try{
@@ -167,10 +212,15 @@ class CartController{
                   res.status(200).send(updatedCart)
                }catch(error){
                 console.log(error)
-                res.status(400).send({Error:"No se puede eliminar"})
+                res.status(400).send({Error:"Cannot delete"})
                }
         }catch{
-            return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`The cart with the id ${cid} doesn't exist`,
+                code:404
+            }))
        } 
 
     }
@@ -184,7 +234,12 @@ class CartController{
 
             res.status(200).send("Carrito vaciado correctamente")
         }catch(error){
-            next(error)
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`Cannot delete the cart with the id ${cid} because doesn't exist`,
+                code:404
+            }))
         }
     }
 
@@ -198,10 +253,6 @@ class CartController{
         const {cid} = req.params
         try{
             const cart = await this.#cartService.findById(cid)
-
-            if (!cart){
-                return  res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
-            }
             
             let pids = [];
             let amount = [];
@@ -271,7 +322,12 @@ class CartController{
 
         }catch(error){
             console.log(error)
-            res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
+            next(new CustomError({
+                name:"Cart doesn't exist",
+                cause:`The cart with id ${cid} doesn´t exist`,
+                message:`The cart with the id ${cid} doesn't exist`,
+                code:404
+            }))
         }
        
 

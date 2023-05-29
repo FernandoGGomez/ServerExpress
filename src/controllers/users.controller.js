@@ -81,10 +81,15 @@ class UserController{
 
         }catch(error){
             console.log(error)
-            return res.status(404).send({error:"No existe un usuario con ese email en la base de datos"})
+            next(new CustomError({
+                name:"User doesn't exist",
+                cause:`There is no user with that email in the database`,
+                message:`There is no user with that email in the database`,
+                code:404
+            }))
         }
            
-
+        
     }
 
 }

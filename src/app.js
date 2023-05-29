@@ -15,6 +15,9 @@ import MongoStore from 'connect-mongo';
 import { config } from '../utils/configure.js';
 import { configurePassport } from './config/passport.config.js';
 import passport from 'passport';
+import errorMiddleware from './middlewares/error.middleware.js';
+import customResponseMiddleware from './middlewares/custom-response.middleware.js';
+import CustomError from './errors/custom.error.js'
 
 
 
@@ -24,6 +27,7 @@ const {port,mongo_url,cookie_secret,secret_session} = config
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use(customResponseMiddleware);
 app.use(express.static(__dirname+ "/"))
 
 app.use(cookieParser(cookie_secret))
@@ -58,6 +62,17 @@ app.use("/api/mockingproducts",mockingRoute)
 
 
 app.use('/',viewsRoute)
+
+app.use((req,res,next)=>{
+    console.log(req.url)
+    next(new CustomError({
+        name:"Invalid URL",
+        cause:"Invalid URL",
+        message:`The URL: ${req.url} is invalid`,
+        code:404
+    }))
+})
+app.use(errorMiddleware)
 
 const http = app.listen(port,()=> {
     console.log(`Servidor Express escuchando en el puerto ${port}`)
