@@ -1,6 +1,6 @@
 import  express  from 'express';
 import { Router } from 'express';
-import { uploader } from '../../utils/uploader.js';
+import { uploader } from '../utils/uploader.js';
 import productController from '../controllers/products.controller.js';
 import passport from 'passport';
 import { authorized } from '../middlewares/auth.middleware.js';

@@ -6,14 +6,14 @@ import authRoute from './routes/auth.routes.js';
 import sessionsRoute from './routes/sessions.routes.js'
 import mockingRoute from './routes/mockingProducts.routes.js'
 import loggerTestRoute from './routes/loggerTest.router.js'
-import fileDirName from '../utils/fileDirName.js';
+import fileDirName from './utils/fileDirName.js';
 import handlebars from 'express-handlebars';
 import configureSocket from './socket/configure-socket.js';
 import  mongoose  from 'mongoose';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import { config } from '../utils/configure.js';
+import { config } from './utils/configure.js';
 import { configurePassport } from './config/passport.config.js';
 import passport from 'passport';
 

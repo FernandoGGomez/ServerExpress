@@ -1,5 +1,5 @@
 import winston from "winston";
-import { config } from "../../utils/configure.js";
+import { config } from "../utils/configure.js";
 
 const customLevelsOptions={
     levels:{

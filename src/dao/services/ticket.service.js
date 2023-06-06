@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { ticketsModel } from "../models/ticket.model.js"
 class TicketService{
     #model;

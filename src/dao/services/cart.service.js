@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { cartsModel } from "../models/cart.model.js"
 import { logger } from "../../logger/winston-logger.js";
 class CartService{

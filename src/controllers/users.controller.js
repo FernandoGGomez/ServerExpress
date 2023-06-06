@@ -1,6 +1,6 @@
 import UserService from "../dao/services/user.service.js";
 import { generateToken } from '../config/passport.config.js';
-import { createHash } from '../../utils/crypto.js';
+import { createHash } from '../utils/crypto.js';
 import { logger } from "../logger/winston-logger.js";
 class UserController{
 

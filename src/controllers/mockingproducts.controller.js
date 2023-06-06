@@ -1,4 +1,4 @@
-import { generateProducts } from "../../utils/mock.js";
+import { generateProducts } from "../utils/mock.js";
 
 class MockingProductController{
 

@@ -1,4 +1,4 @@
-import { config } from "../../utils/configure.js";
+import { config } from "../utils/configure.js";
 import mongoose from "mongoose";
 export class Factory{
     

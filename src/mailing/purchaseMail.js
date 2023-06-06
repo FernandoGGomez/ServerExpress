@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { config } from '../../utils/configure.js';
+import { config } from '../utils/configure.js';
 
 export async function sendMail(email,ticket){
     const splitedEmail = email.split("@")
