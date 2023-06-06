@@ -1,5 +1,5 @@
 import { Factory } from "../dao/factory.js";
-import ProductService from "../dao/services/product.service.js";
+import { logger } from "../logger/winston-logger.js";
 
 class ProductController{
 
@@ -19,6 +19,7 @@ class ProductController{
             res.status(200).send(productoAgregado);
 
         }catch(error){
+            logger.error(error)
             next(error)
         }
         
@@ -38,12 +39,11 @@ class ProductController{
             if(!product){
                 return res.status(400).send({Error: `The product with id ${pid} doesn´t exist `});
             }
-            const updatedProduct =  await this.#service.update({_id:pid},req.body);
-            console.log("El console.log en products.routes:",updatedProduct)
-            
+            const updatedProduct =  await this.#service.update({_id:pid},req.body);            
             res.status(200).send(updatedProduct) 
         
         }catch(error){
+            logger.error(`The product with id ${pid} doesn´t exist`)
              return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
         }
      
@@ -82,12 +82,9 @@ class ProductController{
         const {pid} = req.params;
         try{  
             const productoFiltrado =  await this.#service.findById(pid);     
-            console.log("PeoductoFiltrado",productoFiltrado) 
-            if(!productoFiltrado){
-                return res.status(400).send({Error: `The product with id ${pid} doesn´t exist`})
-            }
             res.status(200).send(productoFiltrado)
         }catch(error){
+            logger.error(`The product with id ${pid} doesn´t exist`)
             return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
         }
     
@@ -100,12 +97,14 @@ class ProductController{
             await this.#service.delete(pid);
             res.status(200).send(`El producto con el id ${pid} ha sido eliminado correactamente`)
         }catch(error){
+            logger.error(`The product with id ${pid} doesn´t exist`)
             return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
         }   
 
     }
 
     async updateError(req,res,next){   
+        logger.warning(`Debe proporcionar el Id del producto a actualizar `)
         return res.status(400).send({Error: `Debe proporcionar el Id del producto a actualizar `})
     }
 

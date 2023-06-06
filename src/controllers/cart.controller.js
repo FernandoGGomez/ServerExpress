@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
-import CartService from "../dao/services/cart.service.js";
-import ProductService from "../dao/services/product.service.js";
-import TicketService from "../dao/services/ticket.service.js";
 import { sendMail } from "../mailing/purchaseMail.js";
 import { Factory } from "../dao/factory.js";
+import { logger } from "../logger/winston-logger.js";
 
 class CartController{
 
@@ -45,16 +43,19 @@ class CartController{
                 await this.#cartService.update(cid,product);
                 res.status(200).send({message:"Carrito actualizado correctamente"});
             }catch(error){
+                logger.error(`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`)
                 res.status(400).send({error:`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`})
             }
             
 
            }catch(error){
+            logger.error(`The cart with id ${cid} doesn´t exist`)
             return res.status(404).send({error: `The cart with id ${cid} doesn´t exist`})           
         }
     
         }
         else{
+            logger.error("No se pudo actualizar el carrito")
             res.status(500).send("No se pudo actualizar el carrito")
         }
         
@@ -72,6 +73,7 @@ class CartController{
             try{
                 await this.#cartService.findById(cid);
             }catch(error){
+                logger.error(`El carrito con el id ${cid} no existe`)
                 return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
             }
             
@@ -79,6 +81,7 @@ class CartController{
             try{
                 await this.#productService.findById(pid);
             }catch(error){
+                logger.error(`El Producto con el id ${pid} no existe`)
                 return res.status(400).send({Error: `El Producto con el id ${pid} no existe`})
             }
             
@@ -88,10 +91,11 @@ class CartController{
     
                 res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
             }catch(error){
+                logger.error(`El carrito con el id ${cid} no existe`)
                 res.status(404).send({"Error":`El carrito con el id ${cid} no existe`})
             }
         }else{
-    
+            logger.error("Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico")
             res.status(400).send({"Error":"Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico"})
         }
         
@@ -106,6 +110,7 @@ class CartController{
             const cart = await this.#cartService.findById(cid);
               res.status(200).send({cart:cart.cart})
         }catch(error){
+            logger.error(`The cart with the id ${cid} doesn't exist`)
             return res.status(400).send({error:`The cart with the id ${cid} doesn't exist`})
         }
 
@@ -126,6 +131,7 @@ class CartController{
 
 
             }catch(error){
+                logger.error(`El Producto con el id ${pid} no existe`)
                 return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
             }
                 
@@ -134,13 +140,13 @@ class CartController{
                 const cart = await this.#cartService.findById(cid);
                 res.status(200).send(cart)
             }catch(error){
-                console.log(error)
+                logger.error(error)
                 next(error)
             }
            
 
         }catch(error){
-            console.log(error)
+            logger.error(`El carrito con el id ${cid} no existe`)
             return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
         }
         
@@ -158,6 +164,8 @@ class CartController{
             try{
                 await this.#productService.findById(pid);
                }catch{
+                logger.error(`El Producto con el id ${pid} no existe`)
+
                 return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
                }
                
@@ -166,10 +174,11 @@ class CartController{
                   const updatedCart = await this.#cartService.findById(cid);
                   res.status(200).send(updatedCart)
                }catch(error){
-                console.log(error)
+                logger.error("No se puede eliminar")
                 res.status(400).send({Error:"No se puede eliminar"})
                }
         }catch{
+            logger.error(`El carrito con el id ${cid} no existe`)
             return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
        } 
 
@@ -184,11 +193,13 @@ class CartController{
 
             res.status(200).send("Carrito vaciado correctamente")
         }catch(error){
+            logger.error(error)
             next(error)
         }
     }
 
-    async updateError(req,res,next){   
+    async updateError(req,res,next){  
+        logger.warning(`Debe proporcionar el Id del producto a actualizar `) 
         return res.status(400).send({Error: `Debe proporcionar el Id del producto a actualizar `})
     }
 
@@ -198,11 +209,6 @@ class CartController{
         const {cid} = req.params
         try{
             const cart = await this.#cartService.findById(cid)
-
-            if (!cart){
-                return  res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
-            }
-            
             let pids = [];
             let amount = [];
             for (let i = 0 ; i < cart.cart.length ; i++){
@@ -211,7 +217,7 @@ class CartController{
                 const stock = JSON.parse(JSON.stringify(cart.cart[i].product.stock))
                 const pid =  JSON.parse(JSON.stringify(cart.cart[i].product._id))
                 const product = await this.#productService.findById(pid)
-
+                
                 if(stock >= quantity){
                    product.stock -= quantity
                    amount.push(quantity)
@@ -260,7 +266,7 @@ class CartController{
                     return res.status(200).send(ticket)
                 }
            
-           
+            logger.warning(`No hay stock suficiente de los siguientes productos ${JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))}`)     
             res.status(200).send({error:"No hay stock suficiente de los siguientes productos",products:JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))})
                 
                 
@@ -270,7 +276,7 @@ class CartController{
           
 
         }catch(error){
-            console.log(error)
+            logger.error(`The cart with the id ${cid} doesn't exist`) 
             res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
         }
        

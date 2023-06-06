@@ -24,6 +24,8 @@ export const config = {
 
     mail_host:process.env.MAIL_HOST ,
 
-    mail_company: process.env.MAIL_COMPANY
+    mail_company: process.env.MAIL_COMPANY,
+
+    node_env: process.env.NODE_ENV
 
 } 

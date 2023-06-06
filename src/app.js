@@ -5,6 +5,7 @@ import viewsRoute from './routes/views.router.js';
 import authRoute from './routes/auth.routes.js';
 import sessionsRoute from './routes/sessions.routes.js'
 import mockingRoute from './routes/mockingProducts.routes.js'
+import loggerTestRoute from './routes/loggerTest.router.js'
 import fileDirName from '../utils/fileDirName.js';
 import handlebars from 'express-handlebars';
 import configureSocket from './socket/configure-socket.js';
@@ -55,8 +56,9 @@ app.use('/api/carts',cartRoute)
 app.use('/api/auth',authRoute)
 app.use("/api/sessions",sessionsRoute)
 app.use("/api/mockingproducts",mockingRoute)
+app.use("/api/loggertest",loggerTestRoute)
 
-
+ 
 app.use('/',viewsRoute)
 
 const http = app.listen(port,()=> {

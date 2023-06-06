@@ -1,6 +1,7 @@
 import UserService from "../dao/services/user.service.js";
 import { generateToken } from '../config/passport.config.js';
 import { createHash } from '../../utils/crypto.js';
+import { logger } from "../logger/winston-logger.js";
 class UserController{
 
     #service;
@@ -28,14 +29,11 @@ class UserController{
 
     async login(req,res){
         const user = req.user
-        console.log("user en login:",user)
         const token =  generateToken({_id:user._id,email:user.email})
-        console.log(token)
         res.cookie("AUTH",token,{
             maxAge: 60*60*1000*24,
             httpOnly: true
         })
-        console.log("req.user:",user)
         res.redirect("../../products",);
     }
 
@@ -45,16 +43,13 @@ class UserController{
 
     async githubCallback(req,res){
         req.session.user = req.user.email
-        console.log("req.user:",req.user.email)
         res.redirect("../../products")
     }
 
     async logout(req,res){
-        console.log("req.user:",req.user)
 
         res.clearCookie("AUTH")
         req.user = false
-        console.log("req.userfalse:",req.user)
         res.status(200).redirect("/login")
     }
 
@@ -73,14 +68,14 @@ class UserController{
             
             res.status(200).redirect("/login")
            }catch(error){
-            console.log(error)
+            logger.error(error)
             return res.status(500).send({error:"Internal server error"})
            }
            
 
 
         }catch(error){
-            console.log(error)
+            logger.error("No existe un usuario con ese email en la base de datos")
             return res.status(404).send({error:"No existe un usuario con ese email en la base de datos"})
         }
            

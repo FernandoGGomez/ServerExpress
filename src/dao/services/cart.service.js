@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { cartsModel } from "../models/cart.model.js"
+import { logger } from "../../logger/winston-logger.js";
 class CartService{
     #model;
     constructor(){
@@ -70,7 +71,7 @@ class CartService{
             const filteredCart = JSON.parse(JSON.stringify(cart.cart.filter(e => e.product != pid)));
             return this.#model.updateOne({_id:id},{$set:{cart:filteredCart}});
         }catch(error){
-            console.log(error)
+            logger.error(error)
         }
         
        

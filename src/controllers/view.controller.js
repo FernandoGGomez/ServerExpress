@@ -2,6 +2,7 @@ import CartService from "../dao/services/cart.service.js";
 import UserService from "../dao/services/user.service.js"
 import chatManager from "../managers/chat.manager.js"
 import ProductService from "../dao/services/product.service.js";
+import { logger } from "../logger/winston-logger.js";
 
 class viewController{
     #CartService
@@ -125,18 +126,16 @@ class viewController{
     async viewProduct(req,res,next){
         
     const {pid} = req.params;
+        try{
+            const productoFiltrado =  await this.#ProductService.findById(pid);
+     
 
-    const productoFiltrado =  await this.#ProductService.findById(pid);
-    console.log(productoFiltrado)
-    if(!productoFiltrado){
-
-        return res.status(404).send({Error: `El Producto con el id ${pid} no existe`}) 
-
-    }
-
+            res.status(200).render("product",{product:JSON.parse(JSON.stringify(productoFiltrado))})
+        }catch{
+            logger.error(`El Producto con el id ${pid} no existe`)
+            return res.status(404).send({Error: `El Producto con el id ${pid} no existe`})
+        }
     
-    console.log("PeoductoFiltrado",productoFiltrado) 
-    res.status(200).render("product",{product:JSON.parse(JSON.stringify(productoFiltrado))})
   
     }
 
