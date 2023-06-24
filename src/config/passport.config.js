@@ -3,10 +3,11 @@ import local from "passport-local";
 import github from "passport-github2";
 import jwt from "passport-jwt";
 import  Jwt  from "jsonwebtoken";
-import { config } from "../../utils/configure.js";
-import { createHash, isValidPassword } from "../../utils/crypto.js";
+import { config } from "../utils/configure.js";
+import { createHash, isValidPassword } from "../utils/crypto.js";
 import { usersModel } from "../dao/models/user.model.js";
 import UserDto from "../dao/DTOs/user.dto.js";
+import { cartsModel } from "../dao/models/cart.model.js";
 
 const localStrategy = local.Strategy;
 const githubStrategy = github.Strategy;
@@ -29,7 +30,7 @@ export function configurePassport(){
             if(userExist){
                 return done(null,false)
             }
-        
+           
             const newUser = await usersModel.create({
                 name,
                 last_name,
@@ -38,8 +39,7 @@ export function configurePassport(){
                 password:createHash(password),
                 rol
             })
-            
-            done(null,newUser)
+            done(null,newUser)   
         }catch(error){
             done(error)
         }
@@ -170,9 +170,13 @@ export function configurePassport(){
             }
             return done(null,user)
         }
-        const user= await usersModel.findOne({_id:id});
-        console.log("deserializaeUser:",user)
-        done(null,new UserDto (user));
+
+            const user= await usersModel.findOne({_id:id});
+            console.log("deserializaeUser:",user)
+            done(null,new UserDto (user));
+       
+
+        
     });
 
 }

@@ -17,7 +17,8 @@ class CartController{
     async create(req,res,next){
         
     
-        await this.#cartService.create()
+       const cart = await this.#cartService.create()
+       console.log(cart)
 
         res.status(200).send({ok:"true",message:"Carrito creado correctamente"})
         

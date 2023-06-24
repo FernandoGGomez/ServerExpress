@@ -34,6 +34,7 @@ const usersSchema = new mongoose.Schema({
         type: String,
         default: "Usuario"
     }
+    
 })
 
 usersSchema.plugin(mongoosePaginate);

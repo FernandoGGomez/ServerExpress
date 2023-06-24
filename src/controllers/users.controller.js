@@ -2,6 +2,7 @@ import UserService from "../dao/services/user.service.js";
 import { generateToken } from '../config/passport.config.js';
 import { createHash } from '../utils/crypto.js';
 import { logger } from "../logger/winston-logger.js";
+import { Factory } from "../dao/factory.js";
 class UserController{
 
     #service;
@@ -57,12 +58,12 @@ class UserController{
         const {email,newPassword} = req.body
     
         try{
-            await this.#service.findOne(email)
+            await this.#service.findOne({email:email})
     
             const hashedPassword = createHash(newPassword)
     
            try{
-            await this.#service.updateOne(email,hashedPassword)
+            await this.#service.updateOne({email:email},{password:hashedPassword})
         
             req.session.user = email
             
@@ -82,8 +83,38 @@ class UserController{
 
     }
 
+    async premiumUser(req,res,next){
+
+        const uid = req.params.uid;
+        console.log(uid)
+       
+
+        try{
+            const user = await this.#service.findOne({_id:uid})
+            console.log("el rol",user.rol)
+            const rol = user.rol;
+
+            if(rol === "Usuario"){
+
+                const updatedUser = await this.#service.updateOne({_id:uid},{rol:"premium"})
+                res.status(200).send({user:updatedUser})
+            }else if(rol === "premium"){
+        
+                const updatedUser = await this.#service.updateOne({_id:uid},{rol:"Usuario"})
+                res.status(200).send({user:updatedUser})
+            }else{
+                     res.status(400).send({error:"Un admin no puede ser premium"})
+            }
+
+        }catch(error){
+            console.log(error)
+            next(error)
+        }
+
+    }
+
 }
 
-const controller = new UserController(new UserService);
+const controller = new UserController(await Factory.getDao("users"));
 
 export default controller;

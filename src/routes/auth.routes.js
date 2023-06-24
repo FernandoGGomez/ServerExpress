@@ -21,4 +21,7 @@ route.get("/github-callback",passport.authenticate("github" ,{failureRedirect:"/
 route.post("/logout",controller.logout)
 
 route.post("/restorepassword",controller.restorePassword.bind(controller))
+
+route.post("/premium/:uid",controller.premiumUser.bind(controller))
+
 export default route

@@ -10,14 +10,14 @@ class UserService{
         return this.#model.create(data);
     }
 
-    async findOne(email){
-        const user = await this.#model.findOne({email:email});
+    async findOne(filter){
+        const user = await this.#model.findOne(filter);
         return user
     }
 
-    async updateOne(email,password){
-
-        return  this.#model.updateOne({email},{$set :{password:password}})
+    async updateOne(filter,newData){
+        
+        return  this.#model.updateOne(filter,{$set : newData})
     }
 
     async delete(id){

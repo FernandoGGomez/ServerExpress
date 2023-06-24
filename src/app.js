@@ -3,6 +3,7 @@ import productRoute from './routes/products.routes.js';
 import cartRoute from './routes/carts.routes.js';
 import viewsRoute from './routes/views.router.js';
 import authRoute from './routes/auth.routes.js';
+import usersRoute from './routes/users.routes.js'
 import sessionsRoute from './routes/sessions.routes.js'
 import mockingRoute from './routes/mockingProducts.routes.js'
 import loggerTestRoute from './routes/loggerTest.router.js'
@@ -54,6 +55,7 @@ app.set('view engine','handlebars')
 app.use('/api/products',productRoute)
 app.use('/api/carts',cartRoute)
 app.use('/api/auth',authRoute)
+app.use('/api/users',usersRoute)
 app.use("/api/sessions",sessionsRoute)
 app.use("/api/mockingproducts",mockingRoute)
 app.use("/api/loggertest",loggerTestRoute)
