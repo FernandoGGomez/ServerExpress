@@ -30,15 +30,18 @@ export function configurePassport(){
             if(userExist){
                 return done(null,false)
             }
-           
+           const carrito = await cartsModel.create();
+           console.log(carrito)
             const newUser = await usersModel.create({
                 name,
                 last_name,
                 email:username,
                 age,
                 password:createHash(password),
-                rol
+                rol,
+                cart: carrito
             })
+            console.log("newUser",newUser)
             done(null,newUser)   
         }catch(error){
             done(error)
