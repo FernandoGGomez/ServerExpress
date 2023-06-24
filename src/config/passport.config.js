@@ -3,8 +3,8 @@ import local from "passport-local";
 import github from "passport-github2";
 import jwt from "passport-jwt";
 import  Jwt  from "jsonwebtoken";
-import { config } from "../../utils/configure.js";
-import { createHash, isValidPassword } from "../../utils/crypto.js";
+import { config } from "../utils/configure.js";
+import { createHash, isValidPassword } from "../utils/crypto.js";
 import { usersModel } from "../dao/models/user.model.js";
 import UserDto from "../dao/DTOs/user.dto.js";
 
