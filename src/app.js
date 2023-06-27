@@ -16,13 +16,17 @@ import MongoStore from 'connect-mongo';
 import { config } from './utils/configure.js';
 import { configurePassport } from './config/passport.config.js';
 import passport from 'passport';
+import spec from './docs/swagger-options.js';
+import swaggerUiExpress from "swagger-ui-express";
 
 
 
 const {__dirname} = fileDirName(import.meta)
 const {port,mongo_url,cookie_secret,secret_session} = config
 
+
 const app = express();
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(spec));
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(express.static(__dirname+ "/"))
