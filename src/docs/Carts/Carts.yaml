@@ -1,0 +1,195 @@
+paths:
+  /api/carts/{cid}:  
+    get:
+      summary: Obtiene un carrito por su id indicado en los parámetros de la url
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: El id del carrito
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: El carrito fue obtenido satisfactoriamente de la base de datos
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        500:
+          description: Error interno del servidor. Usualmente generado por una query defectuosa o un fallo de conexión con la base de datos
+    post:
+      summary: Crea un carrito
+      tags:
+        - Carts
+    put:
+      summary: Actualiza la cantidad de productos en un carrito.Se pasa en la url el id del carrito y en el body se pasa el id del producto a actualizar y su cantidad
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: Id del carrito
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/UpdateCart'
+    delete:   
+      summary: Vacía por completo un carrito a partir de su id indicado en los parámetros de la url
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: Id del carrito
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: El carrito fue removido satisfactoriamente de la base de datos
+          
+  /api/carts/{cid}/products/{pid}:
+    post:
+      summary: Agrega un producto a un carrito. El id del carrito y el producto se pasan por parámetros
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: Id del carrito
+          required: true
+          schema:
+            type: string
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/AddProductToCart'
+      
+    put:
+      summary: Actualiza la cantidad de un producto en un carrito. El id del carrito y el producto se pasan por parámetros. La cantidad a actualizar se pasa por req.body
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: Id del carrito
+          required: true
+          schema:
+            type: string
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/UpdateProductInCart'
+    delete:
+      summary: Elimina un producto de un carrito. El id del carrito y el producto se pasan por parámetros 
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          description: Id del carrito
+          required: true
+          schema:
+            type: string
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string  
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Compra todos los productos del carrito
+      tags:
+        - Carts   
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del carrito
+          example: 6429ed99be9bd4f0175ee1b1
+
+        cart:
+          type: array
+          description:  Carrito
+          example: [{product: 6429ef95be9bd4f0175ee1f1, quantity: 5, _id: 646146b73f418e5dc6cf9cda}]
+
+      example:
+        _id: 642a174049578709069e5635
+        cart: [{product: 6429ef95be9bd4f0175ee1f1, quantity: 5, _id: 646146b73f418e5dc6cf9cda}]
+
+  requestBodies:
+    UpdateCart:
+      type: object
+      properties:
+        cart:
+          type: array
+          description:  Carrito
+          example: [{product: 6429ee9cbe9bd4f0175ee1b6,quantity: 30}]
+      example:
+        [{product: 6429ee9cbe9bd4f0175ee1b6,quantity: 30}]
+    UpdateProductInCart:
+      type: object
+      properties:
+        cart:
+          type: array
+          description:  Carrito
+          example: [{quantity: 30}]
+      example:
+        [{quantity: 30}]
+
+    AddProductToCart:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Id del Carrito
+          example: 646005ca567a5c2da1794f58
+        cart:
+          type: array
+          description: Carrito
+          example: [{ product: {
+                    _id: 6429ed99be9bd4f0175ee1b1,
+                    title: titulo1111,
+                    description: Descripción del producto,
+                    price: 55,
+                    thumbnail: C:\Imagenes\imagen.png,
+                    code: ww22,
+                    status: true,
+                    stock: 1,
+                    category: Procesador,
+                    __v: 0
+                },
+                quantity: 3,
+                _id: 649a2d47e3724a344464e34b}]
+            
+               
+
+  

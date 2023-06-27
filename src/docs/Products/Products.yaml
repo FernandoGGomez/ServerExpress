@@ -1,0 +1,244 @@
+paths:
+  /api/products/:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        200:
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos
+          content: 
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  totalPages:
+                    type: number
+                  prevPage:
+                    type: number
+                  nextPage:
+                    type: number
+                  page:
+                    type: number
+                  hasPrevPage:
+                    type: boolean
+                  hasNextPage:
+                    type: boolean
+                  prevLink:
+                    type: string
+                    example: linkPrev 
+                  nextLink:
+                    type: string 
+                    example: linkNext    
+        500:
+          description: Error interno del servidor. Usualmente generado por una query defectuosa o un fallo de conexión con la base de datos
+
+    post:
+      summary: Carga un nuevo producto a la base de datos. La propiedad thumbnail es opcional
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/UploadProduct'
+
+  /api/products/{pid}:  
+    get:
+      summary: Obtiene un producto por su id indicado en los parámetros de la url
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: El producto fue obtenido satisfactoriamente de la base de datos
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        500:
+          description: Error interno del servidor. Usualmente generado por una query defectuosa o un fallo de conexión con la base de datos
+    put:
+      summary: Actualiza un producto a partir de su id indicado en los parámetros de la url
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/UpdateProduct'
+    delete:   
+      summary: Elimina un producto a partir de su id indicado en los parámetros de la url
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          description: Id del producto
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: El producto fue removido satisfactoriamente de la base de datos
+        
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id del producto
+          example: 6429ed99be9bd4f0175ee1b1
+
+        title:
+          type: string
+          description:  Nombre del producto
+          example: Ryzen 5 5600x
+        description:
+          type: string
+          description: Descripción del producto
+          example: Procesador de 6 núcleos , 12 hilos y 4.6GHz de frecuencia
+        price:
+          type: number
+          description: Precio
+          example: 144998
+        thumbnail:
+          type: string
+          description: Dirección de la imagen
+          example: C:\Imagenes\imagen.jpg
+        code:
+          type: string
+          description: Código del producto
+          example: dkjh2few12332
+        status:
+          type: boolean
+          description: Disponibilidad del producto (true o false)
+          example: true
+        stock:
+          type: number
+          description: Stock del producto
+          example: 25
+        category:
+          type: string
+          description: Categoría del producto
+          example: Procesador
+
+      example:
+        _id: 6429ed99be9bd4f0175ee1b1
+        title: Ryzen 5 5600x
+        description: Procesador de 6 núcleos , 12 hilos y 4.6GHz de frecuencia
+        price: 144998
+        thumbnail: C:\Imagenes\imagen.jpg
+        code: dkjh2few12332
+        status: true
+        stock: 25
+        category: Procesador
+  requestBodies:
+    UploadProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Nombre del producto
+          example: Ryzen 5 2600g
+        description:
+          type: string
+          description: Descripción del producto
+          example: Procesador 6 núcleos 12 hilos
+        price:
+          type: number
+          description: Precio
+          example: 123456
+        code:
+          type: string
+          description: Código del producto
+          example: 496fdddffdhhgdf8sf4
+        status:
+          type: boolean
+          description: Disponibilidad del producto (true o false)
+          example: true
+        stock:
+          type: number
+          description: Stock del producto
+          example: 30
+        category:
+          type: string
+          description: Categoría del producto
+          example: Procesador
+      example:
+        title: Ryzen 5 2600g
+        description: Procesador 6 núcleos 12 hilos
+        price: 123456
+        code: 496fdddffdhhgdf8sf4
+        status: true
+        stock: 30
+        category: Procesador
+
+    UpdateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description:  Nombre del producto
+          example: Ryzen 5 5600x
+        description:
+          type: string
+          description: Descripción del producto
+          example: Procesador de 6 núcleos , 12 hilos y 4.6GHz de frecuencia
+        price:
+          type: number
+          description: Precio
+          example: 144998
+        thumbnail:
+          type: string
+          description: Dirección de la imagen
+          example: C:\Imagenes\imagen.jpg
+        code:
+          type: string
+          description: Código del producto
+          example: dkjh2few12332
+        status:
+          type: boolean
+          description: Disponibilidad del producto (true o false)
+          example: true
+        stock:
+          type: number
+          description: Stock del producto
+          example: 25
+        category:
+          type: string
+          description: Categoría del producto
+          example: Procesador
+
+      example:
+        title: Ryzen 5 5600x
+        description: Procesador de 6 núcleos , 12 hilos y 4.6GHz de frecuencia
+        price: 144998
+        thumbnail: C:\Imagenes\imagen.jpg
+        code: dkjh2few12332
+        status: true
+        stock: 25
+        category: Procesador
+
+  
