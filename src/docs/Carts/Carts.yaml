@@ -1,4 +1,9 @@
 paths:
+  /api/carts:
+    post:
+      summary: Crea un carrito
+      tags:
+        - Carts
   /api/carts/{cid}:  
     get:
       summary: Obtiene un carrito por su id indicado en los parámetros de la url
@@ -20,10 +25,7 @@ paths:
                 $ref: '#/components/schemas/Cart'
         500:
           description: Error interno del servidor. Usualmente generado por una query defectuosa o un fallo de conexión con la base de datos
-    post:
-      summary: Crea un carrito
-      tags:
-        - Carts
+
     put:
       summary: Actualiza la cantidad de productos en un carrito.Se pasa en la url el id del carrito y en el body se pasa el id del producto a actualizar y su cantidad
       tags:
