@@ -7,7 +7,6 @@ import { config } from "../utils/configure.js";
 import { createHash, isValidPassword } from "../utils/crypto.js";
 import { usersModel } from "../dao/models/user.model.js";
 import UserDto from "../dao/DTOs/user.dto.js";
-import { cartsModel } from "../dao/models/cart.model.js";
 
 const localStrategy = local.Strategy;
 const githubStrategy = github.Strategy;
@@ -30,16 +29,14 @@ export function configurePassport(){
             if(userExist){
                 return done(null,false)
             }
-           const carrito = await cartsModel.create();
-           console.log(carrito)
+
             const newUser = await usersModel.create({
                 name,
                 last_name,
                 email:username,
                 age,
                 password:createHash(password),
-                rol,
-                cart: carrito
+                rol
             })
             console.log("newUser",newUser)
             done(null,newUser)   

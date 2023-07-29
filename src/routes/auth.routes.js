@@ -6,7 +6,7 @@ import controller from '../controllers/users.controller.js';
 const route = Router();
 route.use(express.urlencoded({extended: true}));
 
-route.post("/register",passport.authenticate("register",{session:false,failureRedirect:"/api/auth/failureregister"}),passport.authenticate("login"),  controller.register)
+route.post("/register",passport.authenticate("register",{session:false,failureRedirect:"/api/auth/failureregister"}),passport.authenticate("login"),  controller.register.bind(controller))
 
 route.get("/failureregister",controller.failureRegister)
 

@@ -5,22 +5,32 @@ import { logger } from "../logger/winston-logger.js";
 import { Factory } from "../dao/factory.js";
 class UserController{
 
-    #service;
-    constructor(service){
-        this.#service = service;
+    #userService;
+    #cartService;
+    constructor(userService,cartService){
+        this.#userService = userService;
+        this.#cartService = cartService;
+        console.log("USERSERVICE",this.#userService)
+        console.log("cartService",this.#cartService)
+
     }
     
-    async register(req,res){
+    async register(req,res,next){
 
         const user = req.user
-        console.log("user en register:",user)
         const token = generateToken({_id:user._id,email:user.email})
         res.cookie("AUTH",token,{
             maxAge: 60*60*1000*24,
             httpOnly: true
         })
-        console.log("req.user:",user)
-        res.redirect("../../products",);
+        try{
+            const cart = await this.#cartService.create()
+            await this.#userService.updateOne({_id:user._id},{cart:cart._id})
+            res.redirect("../../products",);
+        }catch(error){
+            next(error);
+        }
+        
     
     }
 
@@ -58,12 +68,12 @@ class UserController{
         const {email,newPassword} = req.body
     
         try{
-            await this.#service.findOne({email:email})
-    
+            await this.#userService.findOne({email:email})
+            console.log("USERSERVICE",this.#userService)
             const hashedPassword = createHash(newPassword)
     
            try{
-            await this.#service.updateOne({email:email},{password:hashedPassword})
+            await this.#userService.updateOne({email:email},{password:hashedPassword})
         
             req.session.user = email
             
@@ -90,17 +100,17 @@ class UserController{
        
 
         try{
-            const user = await this.#service.findOne({_id:uid})
+            const user = await this.#userService.findOne({_id:uid})
             console.log("el rol",user.rol)
             const rol = user.rol;
 
             if(rol === "Usuario"){
 
-                const updatedUser = await this.#service.updateOne({_id:uid},{rol:"premium"})
+                const updatedUser = await this.#userService.updateOne({_id:uid},{rol:"premium"})
                 res.status(200).send({user:updatedUser})
             }else if(rol === "premium"){
         
-                const updatedUser = await this.#service.updateOne({_id:uid},{rol:"Usuario"})
+                const updatedUser = await this.#userService.updateOne({_id:uid},{rol:"Usuario"})
                 res.status(200).send({user:updatedUser})
             }else{
                      res.status(400).send({error:"Un admin no puede ser premium"})
@@ -115,6 +125,6 @@ class UserController{
 
 }
 
-const controller = new UserController(await Factory.getDao("users"));
+const controller = new UserController(await Factory.getDao("users"), await Factory.getDao("cart"));
 
 export default controller;
