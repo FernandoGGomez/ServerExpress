@@ -10,8 +10,6 @@ class UserController{
     constructor(userService,cartService){
         this.#userService = userService;
         this.#cartService = cartService;
-        console.log("USERSERVICE",this.#userService)
-        console.log("cartService",this.#cartService)
 
     }
     
@@ -69,7 +67,6 @@ class UserController{
     
         try{
             await this.#userService.findOne({email:email})
-            console.log("USERSERVICE",this.#userService)
             const hashedPassword = createHash(newPassword)
     
            try{
@@ -95,13 +92,10 @@ class UserController{
 
     async premiumUser(req,res,next){
 
-        const uid = req.params.uid;
-        console.log(uid)
-       
+        const uid = req.params.uid;       
 
         try{
             const user = await this.#userService.findOne({_id:uid})
-            console.log("el rol",user.rol)
             const rol = user.rol;
 
             if(rol === "Usuario"){
@@ -117,7 +111,6 @@ class UserController{
             }
 
         }catch(error){
-            console.log(error)
             next(error)
         }
 
