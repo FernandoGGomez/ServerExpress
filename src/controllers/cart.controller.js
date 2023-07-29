@@ -26,7 +26,7 @@ class CartController{
     async update(req,res,next){
 
         const {cid} = req.params
-  
+        const user = req.user;
         const product = req.body
         const requiredProps = ['product', 'quantity'];
     
@@ -36,24 +36,27 @@ class CartController{
           });
     
         if(isValid){
-           try{
-            await this.#cartService.findById(cid)
-            try{
-                await this.#cartService.update(cid,product);
-                res.status(200).send({message:"Carrito actualizado correctamente"});
-            }catch(error){
-                logger.error(`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`)
-                res.status(400).send({error:`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`})
-            }
             
+            if(user.cart.toString() === `new ObjectId("${cid}")`){
+            try{
+                await this.#cartService.findById(cid)
+                try{
+                    await this.#cartService.update(cid,product);
+                    res.status(200).send({message:"Carrito actualizado correctamente"});
+                }catch(error){
+                    logger.error(`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`)
+                    res.status(400).send({error:`The product with id ${product[0].product} cannot be updated because it doesn´t exist in the cart`})
+                }
+                
 
-           }catch(error){
-            logger.error(`The cart with id ${cid} doesn´t exist`)
-            return res.status(404).send({error: `The cart with id ${cid} doesn´t exist`})           
-        }
-    
-        }
-        else{
+            }catch(error){
+                logger.error(`The cart with id ${cid} doesn´t exist`)
+                return res.status(404).send({error: `The cart with id ${cid} doesn´t exist`})           
+            }
+            }else{
+                res.status(401).send({error:"Este carrito no te pertenece"})
+            }
+        }else{
             logger.error("No se pudo actualizar el carrito")
             res.status(500).send("No se pudo actualizar el carrito")
         }
@@ -65,37 +68,42 @@ class CartController{
 
         const {cid,pid} = req.params; 
         const quantity = req.body[0].quantity;
-    console.log("quantity:",quantity)
-        if(!isNaN(Number(quantity))){
-    
-            const data = {product:pid,quantity:Number(quantity)}
-            try{
-                await this.#cartService.findById(cid);
-            }catch(error){
-                logger.error(`El carrito con el id ${cid} no existe`)
-                return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
-            }
-            
-    
-            try{
-                await this.#productService.findById(pid);
-            }catch(error){
-                logger.error(`El Producto con el id ${pid} no existe`)
-                return res.status(400).send({Error: `El Producto con el id ${pid} no existe`})
-            }
-            
-    
-            try{
-                await this.#cartService.updateQuantity(cid,data)
-    
-                res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
-            }catch(error){
-                logger.error(`El carrito con el id ${cid} no existe`)
-                res.status(404).send({"Error":`El carrito con el id ${cid} no existe`})
+        const user = req.user;
+        if(user.cart.toString() === `new ObjectId("${cid}")`){
+
+            if(!isNaN(Number(quantity))){
+        
+                const data = {product:pid,quantity:Number(quantity)}
+                try{
+                    await this.#cartService.findById(cid);
+                }catch(error){
+                    logger.error(`El carrito con el id ${cid} no existe`)
+                    return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
+                }
+                
+        
+                try{
+                    await this.#productService.findById(pid);
+                }catch(error){
+                    logger.error(`El Producto con el id ${pid} no existe`)
+                    return res.status(400).send({Error: `El Producto con el id ${pid} no existe`})
+                }
+                
+        
+                try{
+                    await this.#cartService.updateQuantity(cid,data)
+        
+                    res.send(`Producto ${pid} actualizado con la cantidad ${quantity}`)
+                }catch(error){
+                    logger.error(`El carrito con el id ${cid} no existe`)
+                    res.status(404).send({"Error":`El carrito con el id ${cid} no existe`})
+                }
+            }else{
+                logger.error("Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico")
+                res.status(400).send({"Error":"Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico"})
             }
         }else{
-            logger.error("Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico")
-            res.status(400).send({"Error":"Solo se puede modificar la propiedad quantity y solo puede recibir un valor numérico"})
+            res.status(401).send({error:"Este carrito no te pertenece"})
         }
         
     }
@@ -104,6 +112,8 @@ class CartController{
     async findOne(req,res,next){
 
         const {cid} = req.params;
+        const user = req.user;
+        if(user.cart.toString() === `new ObjectId("${cid}")`){
         try{
     
             const cart = await this.#cartService.findById(cid);
@@ -112,36 +122,51 @@ class CartController{
             logger.error(`The cart with the id ${cid} doesn't exist`)
             return res.status(400).send({error:`The cart with the id ${cid} doesn't exist`})
         }
-
+        }else{
+            res.status(401).send({error:"Este carrito no te pertenece"})
+        }
         }
 
 
     async addProductToCart(req,res,next){
 
         const {cid,pid} = req.params; 
-
+        const user = req.user;
         try{
 
-             await this.#cartService.findById(cid);
+            await this.#cartService.findById(cid);
+           
+            if(user.cart.toString() === `new ObjectId("${cid}")`){
+                try{
+                
+                    const product = await this.#productService.findById(pid);
+                    if(!product){
+                        res.status(404).send({error:"Ese producto no se encuentra en la base de datos"})
+                          
+                    }else if(product.owner === user.email){
+                        res.status(401).send({error:"No puedes agregar un producto tuyo a tu carrito"}) 
+                    }else{
+                        try{
+                            await this.#cartService.addProduct(cid,pid)
+                            const cart = await this.#cartService.findById(cid);
+                            res.status(200).send(cart)
+                        }catch(error){
+                            logger.error(error)
+                            next(error)
+                        }
+                    }
+    
+                }catch(error){
+                    logger.error(`El Producto con el id ${pid} no existe`)
+                    return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
+                }
+            }else{
+                res.status(401).send({error:"No puedes agregar un producto a un carrito que no te pertenece"})
+            }
             
-            try{
+            
                 
-                 await this.#productService.findById(pid);
-
-
-            }catch(error){
-                logger.error(`El Producto con el id ${pid} no existe`)
-                return res.status(400).send({Error: `El Producto con el id ${pid} no existe`}) 
-            }
-                
-            try{
-                await this.#cartService.addProduct(cid,pid)
-                const cart = await this.#cartService.findById(cid);
-                res.status(200).send(cart)
-            }catch(error){
-                logger.error(error)
-                next(error)
-            }
+           
            
 
         }catch(error){
@@ -154,9 +179,10 @@ class CartController{
 
 
     async deleteProduct(req,res,next){
- 
 
         const {cid,pid} = req.params; 
+        const user = req.user;
+        if(user.cart.toString() === `new ObjectId("${cid}")`){
 
         try{
              await this.#cartService.findById(cid);
@@ -180,13 +206,16 @@ class CartController{
             logger.error(`El carrito con el id ${cid} no existe`)
             return res.status(400).send({error:`El carrito con el id ${cid} no existe`})
        } 
-
+    }else{
+        res.status(401).send({error:"Este carrito no te pertenece"})
+    }
     }
 
     async delete(req,res,next){
         
-
         const {cid} = req.params;
+        const user = req.user;
+        if(user.cart.toString() === `new ObjectId("${cid}")`){
         try{
             await this.#cartService.emptyCart(cid)
 
@@ -195,6 +224,9 @@ class CartController{
             logger.error(error)
             next(error)
         }
+    }else{
+        res.status(401).send({error:"Este carrito no te pertenece"})
+    }
     }
 
     async updateError(req,res,next){  
@@ -205,7 +237,9 @@ class CartController{
 
     async purchase(req,res,next){
 
-        const {cid} = req.params
+        const {cid} = req.params;
+        const user = req.user;
+        if(user.cart.toString() === `new ObjectId("${cid}")`){
         try{
             const cart = await this.#cartService.findById(cid)
             let pids = [];
@@ -278,8 +312,9 @@ class CartController{
             logger.error(`The cart with the id ${cid} doesn't exist`) 
             res.status(404).send({error:`The cart with the id ${cid} doesn't exist` })
         }
-       
-
+    }else{
+        res.status(401).send({error:"Este carrito no te pertenece"})
+    }
     }
 
 }
