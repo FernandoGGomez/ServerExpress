@@ -33,7 +33,14 @@ const usersSchema = new mongoose.Schema({
     rol:{
         type: String,
         default: "Usuario"
+    },
+    cart:{
+        type:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"carts"
+        }
     }
+    
 })
 
 usersSchema.plugin(mongoosePaginate);

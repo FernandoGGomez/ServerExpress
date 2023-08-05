@@ -13,6 +13,18 @@ class ProductController{
         try{
             const img = req.file?.path
             const product = req.body;
+            const rol = req.user.rol;
+            
+            if(rol === "premium"){
+                
+                const email = req.user.email;
+
+                const createProduct = {...product,owner:email}
+
+                const productoAgregado = await this.#service.create(createProduct);
+    
+                res.status(200).send(productoAgregado);
+            }
         
             const productoAgregado = await this.#service.create(product);
     
@@ -30,21 +42,32 @@ class ProductController{
 
         const {pid} = req.params;
         const {_id} = req.body; 
+        const {email,rol} = req.user;
+
         
         if(_id){
             return res.status(400).send({Error: `No se puede modificar el id del producto ${pid} `})
         }
         try{
             const product = await this.#service.findById(pid);
-            if(!product){
-                return res.status(400).send({Error: `The product with id ${pid} doesn´t exist `});
+            const owner = product.owner;
+          
+            if(email === owner || rol === "Admin"){
+                try{
+                    const updatedProduct =  await this.#service.update({_id:pid},req.body);            
+                    res.status(200).send(updatedProduct) 
+                
+                }catch(error){
+                    logger.error(`The product with id ${pid} doesn´t exist`)
+                    return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+                }
+            }else{
+                res.status(401).send({error:"No puedes actualizar un producto de otra persona"})
             }
-            const updatedProduct =  await this.#service.update({_id:pid},req.body);            
-            res.status(200).send(updatedProduct) 
-        
-        }catch(error){
+
+        }catch{
             logger.error(`The product with id ${pid} doesn´t exist`)
-             return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+            return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
         }
      
         
@@ -93,13 +116,33 @@ class ProductController{
     async delete(req,res,next){
 
         const {pid} = req.params;
+        const {email,rol} = req.user;
+
         try{
-            await this.#service.delete(pid);
-            res.status(200).send(`El producto con el id ${pid} ha sido eliminado correactamente`)
-        }catch(error){
-            logger.error(`The product with id ${pid} doesn´t exist`)
-            return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
-        }   
+            const product = await this.#service.findById(pid);
+            const owner = product.owner;
+          
+            if(email === owner || rol === "Admin"){
+                try{
+                    await this.#service.delete(pid);
+                    res.status(200).send(`El producto con el id ${pid} ha sido eliminado correactamente`)
+                }catch(error){
+                    logger.error(`The products with id ${pid} doesn´t exist`)
+                    return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+                }   
+
+            }else{
+                res.status(401).send({error:"No puedes eliminar un producto de otra persona"})
+            }
+
+           
+        
+      
+
+    }catch(error){
+        logger.error(`The product with id ${pid} doesn´t exist`)
+        return res.status(404).send({Error: `The product with id ${pid} doesn´t exist`}) 
+    }
 
     }
 

@@ -29,7 +29,7 @@ export function configurePassport(){
             if(userExist){
                 return done(null,false)
             }
-        
+
             const newUser = await usersModel.create({
                 name,
                 last_name,
@@ -38,8 +38,8 @@ export function configurePassport(){
                 password:createHash(password),
                 rol
             })
-            
-            done(null,newUser)
+            console.log("newUser",newUser)
+            done(null,newUser)   
         }catch(error){
             done(error)
         }
@@ -170,9 +170,13 @@ export function configurePassport(){
             }
             return done(null,user)
         }
-        const user= await usersModel.findOne({_id:id});
-        console.log("deserializaeUser:",user)
-        done(null,new UserDto (user));
+
+            const user= await usersModel.findOne({_id:id});
+            console.log("deserializaeUser:",user)
+            done(null,new UserDto (user));
+       
+
+        
     });
 
 }
