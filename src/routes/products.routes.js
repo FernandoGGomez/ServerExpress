@@ -13,12 +13,12 @@ route.get("/",productController.findAll.bind(productController))
 
 route.get("/:pid",productController.findOne.bind(productController));
 
-route.post("/",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Admin"),uploader.single("thumbnail"),productController.create.bind(productController))
+route.post("/",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized(["Admin","premium"]),uploader.single("thumbnail"),productController.create.bind(productController))
 
-route.put("/",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Admin"),productController.updateError)
+route.put("/",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized(["Admin","premium"]),productController.updateError)
 
-route.put("/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Admin"),productController.update.bind(productController))
+route.put("/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized(["Admin","premium"]),productController.update.bind(productController))
 
-route.delete("/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Admin"),productController.delete.bind(productController))
+route.delete("/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized(["Admin","premium"]),productController.delete.bind(productController))
 
 export default route;

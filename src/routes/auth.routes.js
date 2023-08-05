@@ -6,7 +6,7 @@ import controller from '../controllers/users.controller.js';
 const route = Router();
 route.use(express.urlencoded({extended: true}));
 
-route.post("/register",passport.authenticate("register",{session:false,failureRedirect:"/api/auth/failureregister"}),passport.authenticate("login"),  controller.register)
+route.post("/register",passport.authenticate("register",{session:false,failureRedirect:"/api/auth/failureregister"}),passport.authenticate("login"),  controller.register.bind(controller))
 
 route.get("/failureregister",controller.failureRegister)
 
@@ -21,4 +21,7 @@ route.get("/github-callback",passport.authenticate("github" ,{failureRedirect:"/
 route.post("/logout",controller.logout)
 
 route.post("/restorepassword",controller.restorePassword.bind(controller))
+
+route.post("/premium/:uid",controller.premiumUser.bind(controller))
+
 export default route

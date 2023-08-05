@@ -40,7 +40,7 @@ class viewController{
                     status:false,
                 })
             }
-            const user = await this.#UserService.findOne(email)
+            const user = await this.#UserService.findOne({email})
             res.status(200).render("perfil",{
                 status:true,
                 name: user.name,
@@ -49,6 +49,7 @@ class viewController{
                 email: user.email
             })
         }catch(error){
+            console.log(error)
             res.status(403).render("unauthorized")
         }
     }

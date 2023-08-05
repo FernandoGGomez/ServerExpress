@@ -13,7 +13,7 @@ route.get("/:cid",cartController.findOne.bind(cartController))
 
 route.post("/",cartController.create.bind(cartController))
 
-route.post("/:cid/product/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Usuario"),cartController.addProductToCart.bind(cartController))
+route.post("/:cid/product/:pid",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized(["Usuario","premium"]),cartController.addProductToCart.bind(cartController))
 
 route.put("/:cid",cartController.update.bind(cartController))
 
