@@ -13,5 +13,5 @@ async function addToCart(cid,pid){
       return alert("Error en agragar el producto al carrito")
     }
     
-      window.location.replace(`http://localhost:8080/carts/${cid}`)
+      window.location.replace(`https://serverexpress-production-7a89.up.railway.app/carts/${cid}`)
 }

@@ -32,7 +32,7 @@ async function setUser(event){
     }
       console.log("RESPONSE: ",response)
     
-      window.location.replace("http://localhost:8080/products")
+      window.location.replace("https://serverexpress-production-7a89.up.railway.app/products")
     }else{
 
       return alert("Todos los campos son requeridos ")
