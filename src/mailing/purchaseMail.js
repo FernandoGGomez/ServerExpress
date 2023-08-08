@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import { config } from '../utils/configure.js';
 
-export async function sendMail(email,ticket){
+export async function purchaseMail(email,ticket){
     const splitedEmail = email.split("@")
     const splitedEmail2 = splitedEmail[1]
     const splitedEmail3 = splitedEmail2.split(".")
@@ -19,7 +19,7 @@ export async function sendMail(email,ticket){
 
   transport.sendMail({
     from: config.mail_company,
-    to: config.mail_user, //Acá iría el argumento email 
+    to: email,
     subject:"¡Gracias por tu compra!",
     html:`  <h1>¡Gracias por tu compra!</h1>
             <h2>Acá está tu ticket:</h2>
