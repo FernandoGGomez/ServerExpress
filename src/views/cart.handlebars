@@ -3,30 +3,49 @@
 
     {{else}}
 
-        <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
+        {{#if empty}}
 
-        {{#each cart}}
-            
-                <div class="d-flex flex-column col-4 border mx-4 my-4">
-                    <p class="h5"><b>Id: {{this.product._id}}</b> </p>
+        <div class="text-center">
+            <h1>¡Nada por aquí!</h1>
+            <h2>Agrega los productos que te interesen al carrito para recibirlos en un solo paquete</h2>
+            <a class="btn btn-primary" href="/products">Ver Productos</a>
+        </div>
+
+       
+            {{else}}
+                <h1 class="text-center">Carrito</h1>
+                <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5 justify-content-center">
+
+                {{#each cart}}
                     
-                    <p class="h5">{{this.product.category}}</p>
-                    <p class="h3">{{this.product.title}}</p>
-                    <p class="description">{{this.product.description}}</p>
-                    <p class="stock text-align-left h4">Stock: {{this.product.stock}}</p>
-                    <p class="precio text-ends h3 ">$ {{this.product.price}}</p>
-                    {{#if this.product.status}}
-                        <p class="text-ends h3" style="color: green;">Disponible</p>
-                    {{else}}
-                        <p class="text-ends h3" style="color: red;">No disponible</p>
-                    {{/if}} 
+                        <div class="d-flex flex-column col-4 border mx-4 my-4">
+                            <p class="h5"><b>Id: {{this.product._id}}</b> </p>
+                            
+                            <p class="h5">{{this.product.category}}</p>
+                            <p class="h3">{{this.product.title}}</p>
+                            <p class="description">{{this.product.description}}</p>
+                            <p class="stock text-align-left h4">Stock: {{this.product.stock}}</p>
+                            <p class="precio text-ends h3 ">$ {{this.product.price}}</p>
+                            {{#if this.product.status}}
+                                <p class="text-ends h3" style="color: green;">Disponible</p>
+                            {{else}}
+                                <p class="text-ends h3" style="color: red;">No disponible</p>
+                            {{/if}} 
 
-                    <div class="d-flex justify-content-end">
-                        <p class="text-ends h3 mx-5 mb-5">Cantidad: {{this.quantity}}</p>
+                            <div class="d-flex justify-content-end">
+                                <p class="text-ends h3 mx-5 mb-5">Cantidad: {{this.quantity}}</p>
+                            </div>
+                        </div>
+
+                    {{/each}}
                     </div>
-                </div>
-
-            {{/each}}
-            </div>
-            </div>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <h2 class="text-center my-5 mx-5">Total a pagar:{{totalPrice}}</h2>
+                        <button class="btn btn-primary" onclick='purchase("{{cid}}")'>Terminar Compra</button>
+                        <a class="btn btn-primary ms-5" href="/products">Seguir viendo los productos</a>
+                    </div>
+                    </div>
+    {{/if}}
 {{/if}}
+
+<script src="../public/js/purchase.js"></script> 

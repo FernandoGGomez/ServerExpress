@@ -14,8 +14,10 @@
             <p class="text-ends h3" style="color: red;">No disponible</p>
         {{/if}} 
         <div class="text-center my-5">
-                <button type="button" onclick='addToCart("{{this._id}}")' class="btn btn-primary">Agregar al carrito</button>
+                <button type="button" onclick='addToCart("{{buyer.cart}}","{{product._id}}")' class="btn btn-primary">Agregar al carrito</button>
             </div>
         </div>
     </div>
     </div>
+
+    <script src="../public/js/product.js"></script>

@@ -12,7 +12,7 @@
                     <p class="h5">Status:<input id="status_producto" class="mb-2 ms-5"  type="text" title="status" placeholder="Escriba true o false"></p>
                     <input  id="stock_producto" class="mb-2" type="text" title="stock" placeholder="stock del Nuevo producto">
                     <input  id="categoria_producto" class="mb-2" type="text" title="categoría" placeholder="Categoría del Nuevo producto">
-                    <input type="submit" value="Agregar nuevo producto"></button>
+                    <input type="submit" value="Agregar nuevo producto">
                 </form>
             </div>
         </div>
@@ -23,7 +23,7 @@
         <form onsubmit="deleteProduct(event)" class="my-5 mx-5 d-flex flex-column">
                 <input id="id_producto" class="mb-2" type="text" title="nombre" placeholder="Id del producto a eliminar">
     
-                <input type="submit" value="Eliminar Producto"></button>
+                <input type="submit" value="Eliminar Producto">
             </form>
     </div>
 </div>
@@ -32,6 +32,7 @@
 <div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
      {{#each products}}
     <div class="d-flex flex-column col-4 border mx-4 my-4">
+        <p class="h3">Id:{{this._id}}</p>
         <p class="h3">{{this.title}}</p>
         <p class="h5"><b>Code:</b> {{this.code}}</p>
         <p class="description">{{this.description}}</p>
