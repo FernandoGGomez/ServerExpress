@@ -39,12 +39,10 @@ export class Factory{
                         return new ProductManager('products.json');
 
                     case "ticket":
-                        console.log("TICKET")
                         return "hola"
 
                 }
             default:
-                console.log("DAO",dao)
                 throw new Error("Wrong config")
         }
 

@@ -1,6 +1,5 @@
 export function authorized(roles=[]){
     return (req,res,next) =>{
-        console.log("roles:",req.user)
         if(!roles || roles.length == 0 || roles.includes(req.user.rol)){
             next()
         }else{

@@ -17,7 +17,6 @@ export default function configureSocket(httpServer){
                  socket.emit("producto_agregado",product)
                  socket.broadcast.emit("producto_agregado",product)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
            }catch(error){
-            console.log(error)
             socket.emit("producto_agregado",false)
             socket.broadcast.emit("producto_agregado",false)//Esto solo es necesario si se quiere que todos los clientes reciban la actualaización del producto
            }

@@ -38,10 +38,8 @@ socket.on("producto_agregado",(producto)=>{
         }
       
         contenedorProductos.appendChild(nuevoProducto)
-        console.log("Producto: ",producto)
     }else{
-        console.log("Producto inválido")
-        alert("Producto inválido")
+        alert("Producto inválido,ese código ya existe en la base de datos")
     }
 
 })
