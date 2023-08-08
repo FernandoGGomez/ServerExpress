@@ -24,6 +24,8 @@ route.get('/login',controller.viewLogin)
 
 route.get("/perfil",passport.authenticate("current",{failureRedirect:"/unauthorized"}),controller.viewPerfil.bind(controller))
 
+route.get("/adminusers",passport.authenticate("current",{failureRedirect:"/unauthorized"}),authorized("Admin"),controller.viewAdminUsers.bind(controller))
+
 route.get('/restorepassword',controller.viewRestorePassword)
 
 route.get("/unauthorized",controller.viewUnauthorized)
