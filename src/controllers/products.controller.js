@@ -1,11 +1,14 @@
 import { Factory } from "../dao/factory.js";
 import { logger } from "../logger/winston-logger.js";
+import { productDeleted } from "../mailing/productDeleted.js";
 
 class ProductController{
 
-    #service;
-    constructor(service){
-        this.#service = service;
+    #productService;
+    #userService;
+    constructor(productService,userService){
+        this.#productService = productService;
+        this.#userService = userService;
     }
 
     async create(req,res,next){
@@ -21,18 +24,20 @@ class ProductController{
 
                 const createProduct = {...product,owner:email}
 
-                const productoAgregado = await this.#service.create(createProduct);
+                const productoAgregado = await this.#productService.create(createProduct);
+    
+                res.status(200).send(productoAgregado);
+            }else{
+                const productoAgregado = await this.#productService.create(product);
     
                 res.status(200).send(productoAgregado);
             }
         
-            const productoAgregado = await this.#service.create(product);
-    
-            res.status(200).send(productoAgregado);
+            
 
         }catch(error){
-            logger.error(error)
-            next(error)
+            logger.error("Ya existe un producto con ese código en la base de datos")
+            res.status(400).send({error:"Ya existe un producto con ese código en la base de datos"})
         }
         
         }
@@ -49,12 +54,12 @@ class ProductController{
             return res.status(400).send({Error: `No se puede modificar el id del producto ${pid} `})
         }
         try{
-            const product = await this.#service.findById(pid);
+            const product = await this.#productService.findById(pid);
             const owner = product.owner;
           
             if(email === owner || rol === "Admin"){
                 try{
-                    const updatedProduct =  await this.#service.update({_id:pid},req.body);            
+                    const updatedProduct =  await this.#productService.update({_id:pid},req.body);            
                     res.status(200).send(updatedProduct) 
                 
                 }catch(error){
@@ -84,7 +89,7 @@ class ProductController{
             const category = query.category
             const status = query.status
 
-            const products = await this.#service.findAll(limit,page,sort,category,status);
+            const products = await this.#productService.findAll(limit,page,sort,category,status);
 
             res.status(200).send({
                 payload:products.docs,
@@ -104,7 +109,7 @@ class ProductController{
     async findOne(req,res,next){
         const {pid} = req.params;
         try{  
-            const productoFiltrado =  await this.#service.findById(pid);     
+            const productoFiltrado =  await this.#productService.findById(pid);     
             res.status(200).send(productoFiltrado)
         }catch(error){
             logger.error(`The product with id ${pid} doesn´t exist`)
@@ -119,12 +124,19 @@ class ProductController{
         const {email,rol} = req.user;
 
         try{
-            const product = await this.#service.findById(pid);
+            const product = await this.#productService.findById(pid);
             const owner = product.owner;
           
             if(email === owner || rol === "Admin"){
                 try{
-                    await this.#service.delete(pid);
+                    await this.#productService.delete(pid);
+                    try{
+                        const user = await this.#userService.findOne({email:owner})
+                        if(owner === user.email){
+                            productDeleted(user.email,product.title)
+                        }
+                    }catch(error){
+                    }
                     res.status(200).send(`El producto con el id ${pid} ha sido eliminado correactamente`)
                 }catch(error){
                     logger.error(`The products with id ${pid} doesn´t exist`)
@@ -153,6 +165,6 @@ class ProductController{
 
 }
 
-const controller = new ProductController(await Factory.getDao("products"));
+const controller = new ProductController(await Factory.getDao("products"),await Factory.getDao("users"));
 
 export default controller;
