@@ -10,6 +10,11 @@ class UserService{
         return this.#model.create(data);
     }
 
+    async findAll(){
+        const users = await this.#model.find();
+        return users;
+    }
+
     async findOne(filter){
         const user = await this.#model.findOne(filter);
         return user
