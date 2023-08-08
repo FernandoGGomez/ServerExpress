@@ -36,9 +36,9 @@ export function configurePassport(){
                 email:username,
                 age,
                 password:createHash(password),
-                rol
+                rol,
+                last_connection:new Date()
             })
-            console.log("newUser",newUser)
             done(null,newUser)   
         }catch(error){
             done(error)
@@ -50,8 +50,6 @@ export function configurePassport(){
     passport.use("login",new localStrategy({
         usernameField:"email"
     },async(username,password,done)=>{
-
-        console.log("USERNAME:",username)
 
         if(username == "adminCoder@coder.com" & password == "adminCod3r123"){
             const admin = {
@@ -77,7 +75,6 @@ export function configurePassport(){
                 return done(null,user);
     
             }catch(error){
-                console.log(error)
                 done(error)
             }
         
@@ -91,11 +88,9 @@ export function configurePassport(){
         callbackURL:github_callback_url
     },async (accesToken,refreshToken,profile,done)=>{
       try{
-        console.log("PROFILE;",profile)
         const email = profile._json.email
-        console.log("EMAIL:",email,"type:",typeof email)
         const user = await usersModel.findOne({email})
-
+        
         if(!user){
            const newUser = await usersModel.create({
                 name:profile._json.name ?? "-",
@@ -122,7 +117,6 @@ export function configurePassport(){
         jwtFromRequest:ExtractJWT.fromExtractors([cookieExtractor]),
         secretOrKey:cookie_secret,
         },async (jwt_payload,done)=>{
-            console.log("JWT_payload:",jwt_payload)
              if(jwt_payload.user.email == 'adminCoder@coder.com'){
                 const admin = {
                     _id:"1",
@@ -133,14 +127,12 @@ export function configurePassport(){
                     password: "adminCod3r123",
                     rol: "Admin"
                 };
-                console.log("admin",admin)
                 return done(null,admin)
              }
 
             try{    
                 
                 const user = await  usersModel.findOne({email:jwt_payload.user.email})
-                console.log("userJWTStrategy:",user)
                 return done(null,user)
             }catch(error){
                 console.log("Error:",error)
@@ -153,7 +145,6 @@ export function configurePassport(){
 
 
     passport.serializeUser((user,done)=>{ 
-        console.log(user)
         done(null,user._id)
     });
 
@@ -171,12 +162,18 @@ export function configurePassport(){
             return done(null,user)
         }
 
+        try{
             const user= await usersModel.findOne({_id:id});
-            console.log("deserializaeUser:",user)
-            done(null,new UserDto (user));
-       
+            if(user){
+                done(null,new UserDto (user));
+            }else{
+                done(null,{name:"name",last_name:"last_name",email:"email@email.com"});
 
-        
+            }
+           
+        }catch(error){
+            done(error)
+        }       
     });
 
 }
@@ -189,7 +186,6 @@ function cookieExtractor(req){
 }
 
 export  function generateToken(user){
-    console.log("user GenerateToken",user)
     const token = Jwt.sign({user},cookie_secret,{expiresIn:"24h"});
     return token
 }
