@@ -1,6 +1,6 @@
 import multer from "multer";
 
-import fileDirName from './fileDirName.js';
+import fileDirName from './fileDirname.js';
 const { __dirname } = fileDirName(import.meta);
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
