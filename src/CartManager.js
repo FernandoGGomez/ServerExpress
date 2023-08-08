@@ -44,7 +44,6 @@ class CartManager{
         try{
             const carts = await this.getCarts(); //recupero los datos del archivo .json
             const exist = carts.some(car => car.cart.id === id)  //reviso si existe un carrito con el id solicitado
-            console.log(carts)
             if(exist){ //si existe el carrito lo retorno
                 const cartById = carts.find(car => car.cart.id === id) 
                 return cartById;
@@ -70,17 +69,13 @@ class CartManager{
         }
         const todosLosCarritos = await this.getCarts();
  
-        console.log("carritoCargado",carritoCargado)
         const productoEnCarrito = carritoCargado.cart.products.map(element => {
-            console.log("ELEMENT",element)
             return element.product == pid 
         });
         
         if(productoEnCarrito.some(prod => prod == true)){
-            console.log("ESEINDEX",carritoCargado.cart.products.findIndex(element => element.product == pid))
             //si existe el producto en el carrito
             carritoCargado.cart.products[carritoCargado.cart.products.findIndex(element => element.product == pid)].quantity += 1 ;
-            console.log("carritoCargado2:",carritoCargado.cart.products)
             const carritoModificado = {...carritoCargado };
             const carritoSinElProducto = todosLosCarritos.filter(car => car.id !== cid);
             const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
@@ -95,7 +90,6 @@ class CartManager{
             const carritoModificado = {...carritoCargado};
             const carritoSinElProducto = todosLosCarritos.filter(car => car.cart.id !== cid);
             const nuevosCarritos = [...carritoSinElProducto,carritoModificado];
-            console.log("nuevos",nuevosCarritos)
             const datosStr = JSON.stringify(nuevosCarritos);
             await promises.writeFile(this.path, datosStr);
 
