@@ -39,7 +39,11 @@ const usersSchema = new mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:"carts"
         }
+    },
+    last_connection:{
+        type: Date
     }
+
     
 })
 
