@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { sendMail } from "../mailing/purchaseMail.js";
+import { purchaseMail } from "../mailing/purchaseMail.js";
 import { Factory } from "../dao/factory.js";
 import { logger } from "../logger/winston-logger.js";
 
@@ -242,7 +242,7 @@ class CartController{
         if(user.cart.toString() === `new ObjectId("${cid}")`){
         try{
             const cart = await this.#cartService.findById(cid)
-            let pids = [];
+            let pids = []; //productos que no tienen suficiente stock para ser comprados
             let amount = [];
             for (let i = 0 ; i < cart.cart.length ; i++){
 
@@ -290,8 +290,8 @@ class CartController{
             if(ticket.amount > 0){
 
                      this.#ticketService.create(ticket)
-                     await sendMail(req.user.email,ticket)
-                     if(amount.length != 0){
+                     await purchaseMail(req.user.email,ticket)
+                     if(pids.length != 0){
                        return res.status(200).send({error:"No hay stock suficiente de los siguientes productos",products:JSON.parse(JSON.stringify(updatedCart.cart.map(prod => prod.product._id)))})
                      }
 
