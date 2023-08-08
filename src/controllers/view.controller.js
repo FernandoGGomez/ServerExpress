@@ -67,7 +67,6 @@ class viewController{
 
 
     async viewProducts(req,res,next){
-console.log("llega aca",req.user)
     const email = req.cookies.AUTH || req.user?.email || false ;
     const query = req.query;
     const limit =  !isNaN(query.limit) ?  query.limit : 10;
