@@ -8,7 +8,7 @@ import sessionsRoute from './routes/sessions.routes.js'
 import mockingRoute from './routes/mockingProducts.routes.js'
 import loggerTestRoute from './routes/loggerTest.router.js'
 import fileDirName from './utils/fileDirName.js';
-import handlebars from 'express-handlebars';
+import handlebars,{create} from 'express-handlebars';
 import configureSocket from './socket/configure-socket.js';
 import  mongoose  from 'mongoose';
 import cookieParser from 'cookie-parser';
@@ -51,10 +51,24 @@ configurePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
+export const hbs = create({
+    // Specify helpers which are only registered on this instance.
+    helpers: {
+        isPremium(rol, options) {
+          if (rol === 'premium') {
+            return options.fn(this).toString();
+          }
+          return options.inverse(this).toString();
+        }
+      }
+    });
 
-app.engine('handlebars',handlebars.engine())
+app.engine('handlebars',hbs.engine)
 app.set('views',__dirname + '/views')
 app.set('view engine','handlebars')
+
+
+
 
 app.use('/api/products',productRoute)
 app.use('/api/carts',cartRoute)
