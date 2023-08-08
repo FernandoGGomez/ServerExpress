@@ -7,7 +7,7 @@ import usersRoute from './routes/users.routes.js'
 import sessionsRoute from './routes/sessions.routes.js'
 import mockingRoute from './routes/mockingProducts.routes.js'
 import loggerTestRoute from './routes/loggerTest.router.js'
-import fileDirName from './utils/fileDirName.js';
+import fileDirName from './utils/fileDirname.js';
 import handlebars,{create} from 'express-handlebars';
 import configureSocket from './socket/configure-socket.js';
 import  mongoose  from 'mongoose';
