@@ -1,0 +1,28 @@
+<h2>Elimina los usuarios que no se loguearon en más de 2 días <input onclick='deleteInactiveUsers()' class="h4 btn btn-primary" value="Eliminar usuarios"></h2>
+<div id="contenedor_productos" class="d-flex flex-wrap mx-5 my-5">
+     {{#each users}}
+     <div class="d-flex flex-wrap mx-5 my-5 border">
+        <div class="d-flex flex-column col-8  mx-4 my-4">
+            <p class="h4">Name: {{this.name}}</p>
+            <p class="h4">Last Name: {{this.last_name}}</p>
+            <p class="description h4">Email: {{this.email}}</p>
+            <p class="stock text-align-left h4">Age: {{this.age}}</p>
+            <p class="precio text-ends h4">Rol: {{this.rol}}</p>
+        </div>
+         <div class="d-flex flex-column col-4  mx-4 my-4">
+            <input class="d-none" type="text" value="{{this._id}}">
+            {{#isPremium this.rol}}
+            <input id="{{this._id}}" onclick='premium("{{this._id}}")' class="h4 btn btn-primary" value="Premium">
+            {{else}}
+            <input id="{{this._id}}" onclick='premium("{{this._id}}")' class="h4 btn btn-secondary" value="Premium">
+            {{/isPremium}}
+            <input id="{{this._id}}" onclick='deleteUser("{{this._id}}")' class="h4 btn btn-primary" value="Delete">
+            
+        </div>
+    </div>
+       
+    
+    {{/each}}
+</div>
+
+<script src="../public/js/adminUsers.js"></script>   
